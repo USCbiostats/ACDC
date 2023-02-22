@@ -1,0 +1,33 @@
+Package: modACDC
+Title: Association of covariance for detecting differential co-expression
+Version: 0.0.0.9000
+Authors@R: 
+    c(person(given = "Katelyn", 
+		family = "Queen", 
+		email = "kjqueen@usc.edu", 
+		role = c("aut", "cre"),
+           	comment = c(ORCID = "0000-0002-8070-3042")),
+      person(given = "Joshua", 
+		family = "Millstein", , 
+		email = "joshua.millstein@usc.edu", 
+		role = "aut",
+           	comment = c(ORCID = "0000-0001-7961-8943")))
+Maintainer: Katelyn Queen <kjqueen@usc.edu>
+Description: Implements ACDC, a novel approach for detection of differential co-expression that simultaneously accommodates multiple phenotypes or exposures with binary, ordinal, or continuous data types. Users can use the default method which identifies modules by Partition or may supply their own modules. Also included are functions to choose an information loss criterion (ILC) for Partition using OSCA.
+License: MIT + file LICENSE
+URL: https://github.com/USCbiostats/ACDC
+Depends: 
+    R (>= 4.1.0)
+Imports: 
+    CCA,
+    CCP,
+    data.table,
+    foreach,
+    ggplot2,
+    partition,
+    doParallel,
+    utils,
+    stats
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3.9000
