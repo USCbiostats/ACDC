@@ -13,4 +13,6 @@ remotes::install_github("USCbiostats/ACDC")
 
 ## OSCA
 
+OSCA is a suite of C++ functions that provides an estimate of the percent of variance in an external phenotype that can be explained by an omics profile, akin to heritability estimates in GWAS. Here, we make calls to OSCA's Omics Restricted Maximum Likelihood (OREML) method.
+
 In order to use the OSCA functions, the user must specify the absolute path to the OSCA software, which can be downloaded from the Yang Lab website [here](https://yanglab.westlake.edu.cn/software/osca/#Download).
