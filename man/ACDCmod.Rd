@@ -4,25 +4,25 @@
 \alias{ACDCmod}
 \title{ACDCmod}
 \usage{
-ACDCmod(fullData, modules, externalVar, geneList)
+ACDCmod(fullData, modules, externalVar, identifierList)
 }
 \arguments{
 \item{fullData}{data frame or matrix with samples as rows, all probes as columns}
 
 \item{modules}{vector of lists where each list contains column numbers from fullData of genes included in module}
 
-\item{externalVar}{data frame or matrix containing external variable data to be used for CCA, rows are samples}
+\item{externalVar}{data frame, matrix, or vector  containing external variable data to be used for CCA, rows are samples}
 
-\item{geneList}{row vector of gene names corresponding to columns in fullData}
+\item{identifierList}{row vector of identifiers corresponding to columns in fullData (ex: Hugo symbols for genes); optional}
 }
 \value{
 Data frame, sorted by ascending BH FDR value, with columns
 
 \describe{
 \item{moduleNum}{module number}
-\item{genes}{list of Hugo gene symbols for all genes in the module}
+\item{features}{list of identifiers from input parameter "identifierList" for all features in the module; will be 0 if identifierList not included}
 \item{CCA_corr}{list of CCA canonical correlation coefficients}
-\item{CCA_pval}{Wilks-Lamda F-test p-value}
+\item{CCA_pval}{Wilks-Lamda F-test p-value or t-test p-value }
 \item{BHFDR_qval}{Benjamini-Hochberg false discovery rate q-value}
 }
 }

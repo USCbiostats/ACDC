@@ -21,16 +21,19 @@
 #' @import utils
 OSCA_singleValue <- function(df, externalVar, oscaPath) {
   
+  # ensure df is a dataframe
+  df <- as.data.frame(df)
+  
   ## 1. save out data in temporary files
   # gene expression data
-  df$IID <- rownames(df) # dummy IID column for OSCA
+  df$IID <- c(1:nrow(df)) # dummy IID column for OSCA
   df     <- df[,c(ncol(df),1:(ncol(df)-1))] # make dummy IID column first column
   pf     <- tempfile(pattern = "OSCA", fileext = ".txt")
   write.table(df, pf, row.names = F)
   
   # phenotype data
-  evar_file <- data.frame(IID = as.character(1:length(externalVar)),
-                          IID_copy = as.character(1:length(externalVar)),
+  evar_file <- data.frame(IID = c(1:length(externalVar)),
+                          IID_copy = c(1:length(externalVar)),
                           evar = externalVar)
   phf <- tempfile(pattern = "OSCA", fileext = ".txt")
   write.table(evar_file, phf, row.names = F)
