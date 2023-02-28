@@ -8,10 +8,10 @@
 #' @return ggplot object
 #' 
 #' @references 
-#' \itemize{
-#'    \item BH FDR: \url{https://www.jstor.org/stable/2346101}
-#'    \item Partition: \url{https://pubmed.ncbi.nlm.nih.gov/31504178/}
-#' }
+#' Benjamini Y, Hochberg Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal statistical society: series B (Methodological) 57 (1995) 289–300.
+#' 
+#' Millstein J, Battaglin F, Barrett M, Cao S, Zhang W, Stintzing S, et al. Partition: a surjective mapping approach for dimensionality reduction. Bioinformatics 36 (2019) 676–681. doi:10.1093/bioinformatics/ btz661.
+#' 
 #' @seealso OSCA software - \url{https://yanglab.westlake.edu.cn/software/osca}
 #' 
 #' @author Katelyn Queen, \email{kjqueen@@usc.edu}

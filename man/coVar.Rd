@@ -17,6 +17,24 @@ Vector of pairwise covariances for all samples
 \description{
 Function to calculate ACDC covariances within a data pair for all samples
 }
+\examples{
+#load Biobase package
+library(Biobase)
+
+# load the dataset
+data(sample.ExpressionSet)
+
+# pick 100 random samples
+samp <- sample(1:500, size=100)
+
+# first 100 probes from expression data, transposed so samples are rows
+data <- t(exprs(sample.ExpressionSet)[samp,])
+
+# run function with first two samples
+coVar(dataPair = c(1, 2), 
+      fullData = data)
+
+}
 \author{
 Katelyn Queen, \email{kjqueen@usc.edu}
 }

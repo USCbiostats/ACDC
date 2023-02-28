@@ -8,7 +8,25 @@
 #' 
 #' @author Katelyn Queen, \email{kjqueen@@usc.edu}
 #' 
+#' @examples
+#' #load Biobase package
+#' library(Biobase)
+#' 
+#' # load the dataset
+#' data(sample.ExpressionSet)
+#' 
+#' # pick 100 random samples
+#' samp <- sample(1:500, size=100)
+#' 
+#' # first 100 probes from expression data, transposed so samples are rows
+#' data <- t(exprs(sample.ExpressionSet)[samp,])
+#' 
+#' # run function with first two samples
+#' coVar(dataPair = c(1, 2), 
+#'       fullData = data)
+#' 
 #' @export
+#' @import Biobase
 coVar <- function(dataPair, fullData) {
   cv             <- numeric(nrow(fullData))
   meanExpression <- apply(fullData, MARGIN = 2, FUN = mean)
