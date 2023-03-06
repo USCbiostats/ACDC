@@ -20,6 +20,34 @@
 #' \item{SE_Permuted}{standard error of the percent variance estimate for permuted external variable; only if input parameter "permute" is true}
 #' }
 #' 
+#' @examples 
+#' #load CCA package for example dataset
+#' library(CCA)
+#' 
+#' # load dataset
+#' data("nutrimouse")
+#' 
+#' # generate random phenotype
+#' r.pheno <- rnorm(nrow(nutrimouse$gene))
+#' 
+#' ## random phenotype
+#' # run function; input path to OSCA software
+#' # OSCA_par(df = nutrimouse$gene, 
+#' #          externalVar = r.pheno, 
+#' #          ILCincrement = 0.25, 
+#' #          oscaPath = "pathHere", 
+#' #          numNodes = detectCores()-1, 
+#' #          permute = T)
+#' 
+#' ## observed external variable
+#' # run function; input path to OSCA software
+#' # OSCA_par(df = nutrimouse$gene, 
+#' #          externalVar = as.numeric(nutrimouse$diet),
+#' #          ILCincrement = 0.25, 
+#' #          oscaPath = "pathHere", 
+#' #          numNodes = detectCores()-1, 
+#' #          permute = T)
+#' 
 #' @references 
 #' Benjamini Y, Hochberg Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal statistical society: series B (Methodological) 57 (1995) 289–300.
 #' 

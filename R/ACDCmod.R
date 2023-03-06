@@ -4,7 +4,7 @@
 #' 
 #' @param fullData data frame or matrix with samples as rows, all probes as columns
 #' @param modules vector of lists where each list contains column numbers from fullData of genes included in module
-#' @param externalVar data frame, matrix, or vector  containing external variable data to be used for CCA, rows are samples
+#' @param externalVar data frame, matrix, or vector  containing external variable data to be used for CCA, rows are samples; all elements must be numeric
 #' @param identifierList optional row vector of identifiers, of the same length and order, corresponding to columns in fullData (ex: Hugo symbols for genes); default value is the column names from fullData
 #' @return Data frame, sorted by ascending BH FDR value, with columns
 #' 
@@ -16,6 +16,32 @@
 #' \item{CCA_pval}{Wilks-Lamda F-test p-value; t-test p-value if there are only 2 features in the module and a single external variable}
 #' \item{BHFDR_qval}{Benjamini-Hochberg false discovery rate q-value}
 #' }
+#' 
+#' @examples 
+#' #load CCA package for example dataset
+#' library(CCA)
+#' 
+#' # load dataset
+#' data("nutrimouse")
+#' 
+#' # generate random phenotype
+#' r.pheno <- rnorm(nrow(nutrimouse$lipid))
+#' 
+#' # partition dataset and save modules
+#' library(partition)
+#' part <- partition(nutrimouse$lipid, threshold = 0.50)
+#' mods <- part$mapping_key[which(grepl("reduced_var_", part$mapping_key$variable)), ]$mapping
+#' 
+#' # run function for random phenotype
+#' ACDCmod(fullData = nutrimouse$lipid,
+#'         modules=mods,
+#'         externalVar = r.pheno)
+#' 
+#' # run function for diet and genotype (non-random)
+#' ACDCmod(fullData = nutrimouse$lipid,
+#'         modules = mods,
+#'         externalVar = data.frame(diet=as.numeric(nutrimouse$diet), 
+#'         genotype=as.numeric(nutrimouse$genotype)))
 #' 
 #' @details If there is only one co-expression value for a module (ie two features in the module) and a single external variable, CCA reduces to a simple correlation test, and the t-distribution is used to test for significant correlation (Widmann, 2005).
 #'
@@ -35,8 +61,7 @@
 #' @import CCP
 #' @import utils
 #' @import stats
-#' @import Biobase
-ACDCmod <- function(fullData, modules, externalVar, identifierList) {
+ACDCmod <- function(fullData, modules, externalVar, identifierList=colnames(fullData)) {
   
   ## function to suppress output
   # use for p.asym
@@ -48,7 +73,7 @@ ACDCmod <- function(fullData, modules, externalVar, identifierList) {
   }
   
   # ensure correct data types
-  fullData <- as.data.frame(fullData)
+  fullData    <- as.data.frame(fullData)
   externalVar <- as.data.frame(externalVar)
   
   df <- data.frame(moduleNum = c(1:length(modules)),

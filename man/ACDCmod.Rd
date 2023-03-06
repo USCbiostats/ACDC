@@ -4,14 +4,14 @@
 \alias{ACDCmod}
 \title{ACDCmod}
 \usage{
-ACDCmod(fullData, modules, externalVar, identifierList)
+ACDCmod(fullData, modules, externalVar, identifierList = colnames(fullData))
 }
 \arguments{
 \item{fullData}{data frame or matrix with samples as rows, all probes as columns}
 
 \item{modules}{vector of lists where each list contains column numbers from fullData of genes included in module}
 
-\item{externalVar}{data frame, matrix, or vector  containing external variable data to be used for CCA, rows are samples}
+\item{externalVar}{data frame, matrix, or vector  containing external variable data to be used for CCA, rows are samples; all elements must be numeric}
 
 \item{identifierList}{optional row vector of identifiers, of the same length and order, corresponding to columns in fullData (ex: Hugo symbols for genes); default value is the column names from fullData}
 }
@@ -34,6 +34,33 @@ Function for association of covariance to detect differential co-expression anal
 If there is only one co-expression value for a module (ie two features in the module) and a single external variable, CCA reduces to a simple correlation test, and the t-distribution is used to test for significant correlation (Widmann, 2005).
 
 If the number of co-expression features in a particular module is larger than the number of samples, CCA will return correlation coefficients of 1, and p-values and BH FDR q-values will not be calculated. We are working to implement high-dimensional solutions.
+}
+\examples{
+#load CCA package for example dataset
+library(CCA)
+
+# load dataset
+data("nutrimouse")
+
+# generate random phenotype
+r.pheno <- rnorm(nrow(nutrimouse$lipid))
+
+# partition dataset and save modules
+library(partition)
+part <- partition(nutrimouse$lipid, threshold = 0.50)
+mods <- part$mapping_key[which(grepl("reduced_var_", part$mapping_key$variable)), ]$mapping
+
+# run function for random phenotype
+ACDCmod(fullData = nutrimouse$lipid,
+        modules=mods,
+        externalVar = r.pheno)
+
+# run function for diet and genotype (non-random)
+ACDCmod(fullData = nutrimouse$lipid,
+        modules = mods,
+        externalVar = data.frame(diet=as.numeric(nutrimouse$diet), 
+        genotype=as.numeric(nutrimouse$genotype)))
+
 }
 \references{
 Benjamini Y, Hochberg Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal statistical society: series B (Methodological) 57 (1995) 289–300.

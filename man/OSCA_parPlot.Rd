@@ -19,6 +19,41 @@ ggplot object
 \description{
 Function to return a graph comparing percent variance explained in an external phenotype and information lost/percent reduction for both observed and permuted data
 }
+\examples{
+#load CCA package for example dataset
+library(CCA)
+
+# load dataset
+data("nutrimouse")
+
+# generate random phenotype
+r.pheno <- rnorm(nrow(nutrimouse$gene))
+
+## random phenotype
+# run OSCA_par and save output; input path to OSCA software
+# r.par <- OSCA_par(df = nutrimouse$gene, 
+#                 externalVar = r.pheno, 
+#                 ILCincrement = 0.25,
+#                 oscaPath = "pathHere", 
+#                 numNodes = detectCores()-1, 
+#                 permute = T)
+
+# run function
+#OSCA_parPlot(df=r.par, externalVarName = "Random Phenotype", dataName = "Nutritional Issue Genes")
+
+## observed external variables
+# run OSCA_par and save output; input path to OSCA software
+# par <- OSCA_par(df = nutrimouse$gene, 
+#                 externalVar = as.numeric(nutrimouse$diet),
+#                 ILCincrement = 0.25,
+#                 oscaPath = "pathHere", 
+#                 numNodes = detectCores()-1, 
+#                 permute = T)
+
+# run function
+#OSCA_parPlot(df=par, externalVarName = "Diet", dataName = "Nutritional Issue Genes")
+
+}
 \references{
 Benjamini Y, Hochberg Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal statistical society: series B (Methodological) 57 (1995) 289–300.
 

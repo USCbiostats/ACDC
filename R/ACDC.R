@@ -4,7 +4,7 @@
 #' 
 #' @param fullData data frame or matrix with samples as rows, all features as columns
 #' @param ILC information loss criterion for Partition, or the minimum intra-class correlation required for features to be condensed; 0 <= ILC <= 1; default is 0.50
-#' @param externalVar data frame, matrix, or vector containing external variable data to be used for CCA, rows are samples
+#' @param externalVar data frame, matrix, or vector containing external variable data to be used for CCA, rows are samples; all elements must be numeric
 #' @param identifierList optional row vector of identifiers, of the same length and order, corresponding to columns in fullData (ex: Hugo symbols for genes); default value is the column names from fullData
 #' @return Data frame, sorted by ascending BH FDR value, with columns 
 #' 
@@ -16,6 +16,27 @@
 #' \item{CCA_pval}{Wilks-Lamda F-test p-value or t-test p-value}
 #' \item{BHFDR_qval}{Benjamini-Hochberg false discovery rate q-value}
 #' }
+#' 
+#' @examples 
+#' #load CCA package for example dataset
+#' library(CCA)
+#' 
+#' # load dataset
+#' data("nutrimouse")
+#' 
+#' # generate random phenotype
+#' r.pheno <- rnorm(nrow(nutrimouse$lipid))
+#' 
+#' # run function for random phenotype
+#' ACDC(fullData = nutrimouse$lipid,
+#'      ILC = 0.50, 
+#'      externalVar = r.pheno)
+#' 
+#' # run function for diet and genotype (non-random)
+#' ACDC(fullData = nutrimouse$lipid,
+#'      ILC = 0.50, 
+#'      externalVar = data.frame(diet=as.numeric(nutrimouse$diet), 
+#'      genotype=as.numeric(nutrimouse$genotype)))
 #' 
 #' @details If there is only one co-expression value for a module (ie two features in the module) and a single external variable, CCA reduces to a simple correlation test, and the t-distribution is used to test for significant correlation (Widmann, 2005).
 #' 
@@ -36,7 +57,6 @@
 #' @import CCP
 #' @import utils
 #' @import stats
-#' @import Biobase
 ACDC <- function(fullData, ILC = 0.50, externalVar, identifierList = colnames(fullData)) {
   
   ## function to suppress output
@@ -49,7 +69,7 @@ ACDC <- function(fullData, ILC = 0.50, externalVar, identifierList = colnames(fu
   }
   
   # ensure correct data types
-  fullData <- as.data.frame(fullData)
+  fullData    <- as.data.frame(fullData)
   externalVar <- as.data.frame(externalVar)
   
   # partition and find modules

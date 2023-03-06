@@ -4,40 +4,42 @@
 #' 
 #' @param dataPair column indices of two genes to calculate covariance between
 #' @param fullData dataframe or matrix with samples as rows, all probes as columns
-#' @return Vector of pairwise covariances for all samples
+#' @return Co-expression profile, or pairwise covariances for all samples, vector for given features
+#' 
+#' @details Co-expression for a single sample, s, is defined as
+#' \deqn{c_{s,j,k} \equiv \left(g_{s,j}-\bar{g_j}\right)\left(g_{s,k}-\bar{g_k}\right)}
+#' where \eqn{g_{s,j}} denotes the expression of gene j in sample s and \eqn{\bar{g_j}} denotes the mean expression of gene j in all samples.
+#' 
+#' Denoting the sample size as N, coVar returns the co-expression profile across all samples:
+#' \deqn{c_{j,k} = (c_{1,j,k}, c_{2,j,k}, ... , c_{N,j,k})}
 #' 
 #' @author Katelyn Queen, \email{kjqueen@@usc.edu}
 #' 
 #' @examples
-#' #load Biobase package
-#' library(Biobase)
+#' #load CCA package for example dataset
+#' library(CCA)
 #' 
-#' # load the dataset
-#' data(sample.ExpressionSet)
-#' 
-#' # pick 100 random samples
-#' samp <- sample(1:500, size=100)
-#' 
-#' # first 100 probes from expression data, transposed so samples are rows
-#' data <- t(exprs(sample.ExpressionSet)[samp,])
+#' # load dataset
+#' data("nutrimouse")
 #' 
 #' # run function with first two samples
 #' coVar(dataPair = c(1, 2), 
-#'       fullData = data)
+#'       fullData = nutrimouse$lipid)
 #' 
 #' @export
-#' @import Biobase
 coVar <- function(dataPair, fullData) {
-  cv             <- numeric(nrow(fullData))
+  
   meanExpression <- apply(fullData, MARGIN = 2, FUN = mean)
   
-  for (l in 1:nrow(fullData)) {
-    g_j    <- fullData[l, dataPair[1]]
-    g_k    <- fullData[l, dataPair[2]]
+  # helper function to calculate covariance
+  coVar_calc <- function(x) {
+    g_j    <- x[dataPair[1]]
+    g_k    <- x[dataPair[2]]
     bar_gj <- meanExpression[dataPair[1]]
     bar_gk <- meanExpression[dataPair[2]]
-    cv[l]  <- ((g_j-bar_gj)*(g_k-bar_gk))
+    return((g_j-bar_gj)*(g_k-bar_gk))
   }
   
-  return(cv)
+  # calculate dataPair covariance for each sample (row) in fullData 
+  return(as.numeric(apply(fullData, MARGIN = 1, FUN = coVar_calc)))
 }

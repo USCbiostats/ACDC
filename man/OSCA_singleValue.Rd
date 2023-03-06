@@ -19,6 +19,29 @@ Row of OREML output containing percent variance explained in external data and s
 \description{
 Function to return the percent variance explained in an external phenotype for a single dataset
 }
+\examples{
+#load CCA package for example dataset
+library(CCA)
+
+# load dataset
+data("nutrimouse")
+
+# generate random phenotype
+r.pheno <- rnorm(nrow(nutrimouse$gene))
+
+## random phenotype
+# run function; input path to OSCA software
+# OSCA_singleValue(df = nutrimouse$gene, 
+#                  externalVar= r.pheno, 
+#                  oscaPath = "pathHere")
+
+## observed external variable
+# run function; input path to OSCA software
+# OSCA_singleValue(df = nutrimouse$gene, 
+#                  externalVar = as.numeric(nutrimouse$diet),
+#                  oscaPath = "pathHere")
+
+}
 \references{
 Benjamini Y, Hochberg Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal statistical society: series B (Methodological) 57 (1995) 289–300.
 
