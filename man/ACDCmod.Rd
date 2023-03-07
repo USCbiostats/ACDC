@@ -65,6 +65,8 @@ ACDCmod(fullData = nutrimouse$lipid,
 \references{
 Benjamini Y, Hochberg Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal statistical society: series B (Methodological) 57 (1995) 289–300.
 
+Martin P, et al. Novel aspects of PPARalpha-mediated regulation of lipid and xenobiotic metabolism revealed through a nutrigenomic study. Hepatology, in press, 2007.
+
 Millstein J, Battaglin F, Barrett M, Cao S, Zhang W, Stintzing S, et al. Partition: a surjective mapping approach for dimensionality reduction. Bioinformatics 36 (2019) 676–681. doi:10.1093/bioinformatics/ btz661.
 
 Widmann M. One-Dimensional CCA and SVD, and Their Relationship to Regression Maps. Journal of Climate 18 (2005) 2785–2792. doi:10.1175/jcli3424.1.

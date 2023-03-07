@@ -15,6 +15,9 @@
 #' 
 #' @author Katelyn Queen, \email{kjqueen@@usc.edu}
 #' 
+#' @references 
+#' Martin P, et al. Novel aspects of PPARalpha-mediated regulation of lipid and xenobiotic metabolism revealed through a nutrigenomic study. Hepatology, in press, 2007.
+#' 
 #' @examples
 #' #load CCA package for example dataset
 #' library(CCA)

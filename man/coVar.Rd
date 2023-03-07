@@ -37,6 +37,9 @@ coVar(dataPair = c(1, 2),
       fullData = nutrimouse$lipid)
 
 }
+\references{
+Martin P, et al. Novel aspects of PPARalpha-mediated regulation of lipid and xenobiotic metabolism revealed through a nutrigenomic study. Hepatology, in press, 2007.
+}
 \author{
 Katelyn Queen, \email{kjqueen@usc.edu}
 }
