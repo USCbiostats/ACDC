@@ -32,15 +32,9 @@
 #' @export
 coVar <- function(dataPair, fullData) {
   
-  meanExpression <- apply(fullData, MARGIN = 2, FUN = mean)
-  
   # helper function to calculate covariance
   coVar_calc <- function(x) {
-    g_j    <- x[dataPair[1]]
-    g_k    <- x[dataPair[2]]
-    bar_gj <- meanExpression[dataPair[1]]
-    bar_gk <- meanExpression[dataPair[2]]
-    return((g_j-bar_gj)*(g_k-bar_gk))
+    return((x[dataPair[1]]-mean(fullData[,dataPair[1]]))*(x[dataPair[2]]-mean(fullData[,dataPair[2]])))
   }
   
   # calculate dataPair covariance for each sample (row) in fullData 
