@@ -7,6 +7,8 @@
 #' @param oscaPath absolute path to OSCA software
 #' @return Row of OREML output containing percent variance explained in external data and standard error
 #' 
+#' @details OmicS-data-based Complex trait Analysis (OSCA) is a suite of C++ functions. Here, we use OSCA's Omics Restricted Maximum Likelihood (OREML) method to estimate the percent of variance in an external phenotype that can be explained by an omics profile, akin to heritability estimates in GWAS.
+#' 
 #' @examples 
 #' #load CCA package for example dataset
 #' library(CCA)

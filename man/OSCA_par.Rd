@@ -42,6 +42,9 @@ Data frame with columns
 \description{
 Function to return a dataframe of ILCs and percent variance explained in an external phenotype for a range of ILCs between zero and one.
 }
+\details{
+OmicS-data-based Complex trait Analysis (OSCA) is a suite of C++ functions. Here, we use OSCA's Omics Restricted Maximum Likelihood (OREML) method to estimate the percent of variance in an external phenotype that can be explained by an omics profile, akin to heritability estimates in GWAS. OREML is called twice for each ILC tested if permutations are included.
+}
 \examples{
 #load CCA package for example dataset
 library(CCA)

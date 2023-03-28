@@ -7,6 +7,9 @@
 #' @param dataName string of name of data for graph labels; default is blank
 #' @return ggplot object
 #' 
+#' @details OmicS-data-based Complex trait Analysis (OSCA) is a suite of C++ functions. In OSCA_par, we use OSCA's Omics Restricted Maximum Likelihood (OREML) method to estimate the percent of variance in an external phenotype that can be explained by an omics profile, akin to heritability estimates in GWAS. The produced plot shows the percent variance explained in an external variable at varying levels of dataset reduction, calculated for observed external variables in blue and permuted external variables in red. An information loss value of 0 represents the unreduced dataset, and an information loss level of 100 represents the data being reduced to the average expression of all features.
+#' 
+#' 
 #' @examples 
 #' #load CCA package for example dataset
 #' library(CCA)
