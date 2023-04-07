@@ -76,6 +76,7 @@ ACDCmod <- function(fullData, modules, externalVar, identifierList=colnames(full
   # ensure correct data types
   fullData    <- as.data.frame(fullData)
   externalVar <- as.data.frame(externalVar)
+  if(is.null(identifierList)) identifierList <- colnames(fullData)
   
   # check correct dimensions of input
   if(nrow(fullData) != nrow(externalVar)) stop("fullData and externalVar must have the same number of rows.")

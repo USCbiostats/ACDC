@@ -70,14 +70,15 @@ ACDC <- function(fullData, ILC = 0.50, externalVar, identifierList = colnames(fu
     return(tmp)
   }
   
+  # ensure correct data types
+  fullData    <- as.data.frame(fullData)
+  externalVar <- as.data.frame(externalVar)
+  if(is.null(identifierList)) identifierList <- colnames(fullData)
+  
   # check correct dimensions of input
   if(nrow(fullData) != nrow(externalVar)) stop("fullData and externalVar must have the same number of rows.")
   if(ncol(fullData) != length(identifierList)) stop("identifierList must be the same length as the number of columns in fullData.")
   if(0 > ILC | 1 < ILC) stop("ILC must be between 0 and 1.")
-  
-  # ensure correct data types
-  fullData    <- as.data.frame(fullData)
-  externalVar <- as.data.frame(externalVar)
   
   # partition and find modules
   part    <- partition(fullData, threshold = ILC)
