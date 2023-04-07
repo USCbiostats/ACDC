@@ -3,7 +3,7 @@
 #' @description Function to calculate ACDC covariances within a data pair for all samples
 #' 
 #' @param dataPair column indices of two genes to calculate covariance between
-#' @param fullData dataframe or matrix with samples as rows, all probes as columns
+#' @param fullData dataframe or matrix with samples as rows, all probes as columns; each entry should be numeric gene expression or other molecular data values
 #' @return Co-expression profile, or pairwise covariances for all samples, vector for given features
 #' 
 #' @details Co-expression for a single sample, s, is defined as

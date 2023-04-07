@@ -69,6 +69,10 @@
 #' @import doParallel
 OSCA_par <- function(df, externalVar, ILCincrement = 0.05, oscaPath, numNodes = 1, permute = T) {
   
+  # check correct dimensions of input
+  if(nrow(df) != nrow(externalVar)) stop("fullData and externalVar must have the same number of rows.")
+  if(0 > ILCincrement | 1 < ILCincrement) stop("ILCincrement must be between 0 and 1.")
+  
   # iteration counter
   i = 0
   

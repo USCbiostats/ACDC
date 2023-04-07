@@ -7,19 +7,19 @@
 ACDC(fullData, ILC = 0.5, externalVar, identifierList = colnames(fullData))
 }
 \arguments{
-\item{fullData}{data frame or matrix with samples as rows, all features as columns}
+\item{fullData}{data frame or matrix with samples as rows, all features as columns; each entry should be numeric gene expression or other molecular data values}
 
 \item{ILC}{information loss criterion for Partition, or the minimum intra-class correlation required for features to be condensed; 0 <= ILC <= 1; default is 0.50}
 
 \item{externalVar}{data frame, matrix, or vector containing external variable data to be used for CCA, rows are samples; all elements must be numeric}
 
-\item{identifierList}{optional row vector of identifiers, of the same length and order, corresponding to columns in fullData (ex: Hugo symbols for genes); default value is the column names from fullData}
+\item{identifierList}{optional row vector of identifiers, of the same length and order, corresponding to columns in fullData (ex: HUGO symbols for genes); default value is the column names from fullData}
 }
 \value{
 Data frame, sorted by ascending BH FDR value, with columns
 
 \describe{
-\item{moduleNum}{module number}
+\item{moduleNum}{module identifier}
 \item{colNames}{list of column names from fullData of the features in the module}
 \item{features}{list of identifiers from input parameter "identifierList" for all features in the module}
 \item{CCA_corr}{list of CCA canonical correlation coefficients}
@@ -28,10 +28,10 @@ Data frame, sorted by ascending BH FDR value, with columns
 }
 }
 \description{
-Function for association of covariance to detect differential co-expression analysis of modules of correlated genes or molecular features and external data with modules to be defined by Partition.
+ACDC detects differential co-expression between a set of genes, such as a module of co-expressed genes, and a set of external features (exposures or responses) by using canonical correlation analysis (CCA) on the external features and module co-expression values. Modules are detected via Partition.
 }
 \details{
-ACDC detects differential co-expression between a set of genes, such as a module of co-expressed genes, and a set of external features (exposures or responses) by using canonical correlation analysis (CCA) on the external features and module co-expression values. Modules are detected via Partition, an agglomerative data reduction method which performs both feature condensation and extraction based on a user provided information loss criterion (ILC). Feature condensation into modules are only accepted if the intraclass correlation between the features is at least the ILC. For more information about how the co-expression features are calculated, see the coVar documentation.
+Modules are identified by Partition, an agglomerative data reduction method which performs both feature condensation and extraction based on a user provided information loss criterion (ILC). Feature condensation into modules are only accepted if the intraclass correlation between the features is at least the ILC. For more information about how the co-expression features are calculated, see the coVar documentation.
 
 Following CCA, which determines linear combinations of the co-expression and external feature vectors that maximize the cross-covariance matrix for each module, a Wilks-Lambda test is performed to determine if the correlation between these linear combinations is significant. If they are significant, that implies there is differential co-expression. If there is only one co-expression value for a module (ie two features in the module) and a single external variable, CCA reduces to a simple correlation test, and the t-distribution is used to test for significant correlation (Widmann, 2005). If the number of co-expression features in a particular module is larger than the number of samples, CCA will return correlation coefficients of 1, and p-values and BH FDR q-values will not be calculated. We are working to implement high-dimensional solutions.
 }

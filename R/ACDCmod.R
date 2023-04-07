@@ -1,15 +1,14 @@
 #' ACDCmod
 #'
-#' @description Function for association of covariance to detect differential co-expression analysis of modules of correlated genes and external data for user-defined module(s)
-#' 
-#' @param fullData data frame or matrix with samples as rows, all probes as columns
+#' @description ACDCmod detects differential co-expression between a set of genes, such as a module of co-expressed genes, and a set of external features (exposures or responses) by using canonical correlation analysis (CCA) on the external features and module co-expression values. Modules are provided by the user.
+#' @param fullData data frame or matrix with samples as rows, all probes as columns; each entry should be numeric gene expression or other molecular data values
 #' @param modules vector of lists where each list contains column numbers from fullData of genes included in module
 #' @param externalVar data frame, matrix, or vector  containing external variable data to be used for CCA, rows are samples; all elements must be numeric
-#' @param identifierList optional row vector of identifiers, of the same length and order, corresponding to columns in fullData (ex: Hugo symbols for genes); default value is the column names from fullData
+#' @param identifierList optional row vector of identifiers, of the same length and order, corresponding to columns in fullData (ex: HUGO symbols for genes); default value is the column names from fullData
 #' @return Data frame, sorted by ascending BH FDR value, with columns
 #' 
 #' \describe{
-#' \item{moduleNum}{module number}
+#' \item{moduleNum}{module identifier}
 #' \item{colNames}{list of column names from fullData of the features in the module}
 #' \item{features}{list of identifiers from input parameter "identifierList" for all features in the module}
 #' \item{CCA_corr}{list of CCA canonical correlation coefficients}
@@ -43,7 +42,7 @@
 #'         externalVar = data.frame(diet=as.numeric(nutrimouse$diet), 
 #'         genotype=as.numeric(nutrimouse$genotype)))
 #' 
-#' @details ACDC detects differential co-expression between a set of genes, such as a module of co-expressed genes, and a set of external features (exposures or responses) by using canonical correlation analysis (CCA) on the external features and module co-expression values. Modules are provided by the user. For more information about how the co-expression features are calculated, see the coVar documentation.
+#' @details For more information about how the co-expression features are calculated, see the coVar documentation.
 #' 
 #' Following CCA, which determines linear combinations of the co-expression and external feature vectors that maximize the cross-covariance matrix for each module, a Wilks-Lambda test is performed to determine if the correlation between these linear combinations is significant. If they are significant, that implies there is differential co-expression. If there is only one co-expression value for a module (ie two features in the module) and a single external variable, CCA reduces to a simple correlation test, and the t-distribution is used to test for significant correlation (Widmann, 2005). If the number of co-expression features in a particular module is larger than the number of samples, CCA will return correlation coefficients of 1, and p-values and BH FDR q-values will not be calculated. We are working to implement high-dimensional solutions.
 #'
@@ -77,6 +76,12 @@ ACDCmod <- function(fullData, modules, externalVar, identifierList=colnames(full
   # ensure correct data types
   fullData    <- as.data.frame(fullData)
   externalVar <- as.data.frame(externalVar)
+  
+  # check correct dimensions of input
+  if(nrow(fullData) != nrow(externalVar)) stop("fullData and externalVar must have the same number of rows.")
+  if(ncol(fullData) != length(identifierList)) stop("identifierList must be the same length as the number of columns in fullData.")
+  if(0 > ILC | 1 < ILC) stop("ILC must be between 0 and 1.")
+  if(length(modules) == 0) stop("No modules input.")
   
   df <- data.frame(moduleNum = c(1:length(modules)),
                    colNames = numeric(length(modules)),

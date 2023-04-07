@@ -47,6 +47,9 @@
 #' @import utils
 OSCA_singleValue <- function(df, externalVar, oscaPath) {
   
+  # check correct dimensions of input
+  if(nrow(df) != nrow(externalVar)) stop("fullData and externalVar must have the same number of rows.")
+  
   # ensure df is a dataframe
   df <- as.data.frame(df)
   

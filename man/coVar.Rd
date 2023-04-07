@@ -9,7 +9,7 @@ coVar(dataPair, fullData)
 \arguments{
 \item{dataPair}{column indices of two genes to calculate covariance between}
 
-\item{fullData}{dataframe or matrix with samples as rows, all probes as columns}
+\item{fullData}{dataframe or matrix with samples as rows, all probes as columns; each entry should be numeric gene expression or other molecular data values}
 }
 \value{
 Co-expression profile, or pairwise covariances for all samples, vector for given features
