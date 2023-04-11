@@ -81,7 +81,6 @@ ACDCmod <- function(fullData, modules, externalVar, identifierList=colnames(full
   # check correct dimensions of input
   if(nrow(fullData) != nrow(externalVar)) stop("fullData and externalVar must have the same number of rows.")
   if(ncol(fullData) != length(identifierList)) stop("identifierList must be the same length as the number of columns in fullData.")
-  if(0 > ILC | 1 < ILC) stop("ILC must be between 0 and 1.")
   if(length(modules) == 0) stop("No modules input.")
   
   df <- data.frame(moduleNum = c(1:length(modules)),
