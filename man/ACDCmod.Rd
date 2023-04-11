@@ -4,7 +4,13 @@
 \alias{ACDCmod}
 \title{ACDCmod}
 \usage{
-ACDCmod(fullData, modules, externalVar, identifierList = colnames(fullData))
+ACDCmod(
+  fullData,
+  modules,
+  externalVar,
+  identifierList = colnames(fullData),
+  numNodes = 1
+)
 }
 \arguments{
 \item{fullData}{data frame or matrix with samples as rows, all probes as columns; each entry should be numeric gene expression or other molecular data values}
@@ -14,6 +20,8 @@ ACDCmod(fullData, modules, externalVar, identifierList = colnames(fullData))
 \item{externalVar}{data frame, matrix, or vector  containing external variable data to be used for CCA, rows are samples; all elements must be numeric}
 
 \item{identifierList}{optional row vector of identifiers, of the same length and order, corresponding to columns in fullData (ex: HUGO symbols for genes); default value is the column names from fullData}
+
+\item{numNodes}{number of available compute nodes for parallelization; default is 1}
 }
 \value{
 Data frame, sorted by ascending BH FDR value, with columns

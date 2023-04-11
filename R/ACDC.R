@@ -6,6 +6,7 @@
 #' @param ILC information loss criterion for Partition, or the minimum intra-class correlation required for features to be condensed; 0 <= ILC <= 1; default is 0.50
 #' @param externalVar data frame, matrix, or vector containing external variable data to be used for CCA, rows are samples; all elements must be numeric
 #' @param identifierList optional row vector of identifiers, of the same length and order, corresponding to columns in fullData (ex: HUGO symbols for genes); default value is the column names from fullData
+#' @param numNodes number of available compute nodes for parallelization; default is 1
 #' @return Data frame, sorted by ascending BH FDR value, with columns 
 #' 
 #' \describe{
@@ -59,7 +60,10 @@
 #' @import CCP
 #' @import utils
 #' @import stats
-ACDC <- function(fullData, ILC = 0.50, externalVar, identifierList = colnames(fullData)) {
+ACDC <- function(fullData, ILC = 0.50, externalVar, identifierList = colnames(fullData), numNodes = 1) {
+  
+  # to remove "no visible binding" note
+  moduleNum <- CCA_pval <- NULL
   
   ## function to suppress output
   # use for p.asym
@@ -82,50 +86,78 @@ ACDC <- function(fullData, ILC = 0.50, externalVar, identifierList = colnames(fu
   
   # partition and find modules
   part    <- partition(fullData, threshold = ILC)
-  modules <- part$mapping_key[which(grepl("reduced_var_", part$mapping_key$variable)), ]
+  modules <- part$mapping_key[which(grepl("reduced_var_", part$mapping_key$variable)), ]$indices
   
   # stop if no modules identified
-  if(nrow(modules) == 0) stop("No modules identified.")
+  if(length(modules) == 0) stop("No modules identified. Try a smaller ILC.")
   
-  df <- data.frame(moduleNum = as.numeric(gsub("reduced_var_", "", modules$variable)),
-                   colNames = numeric(nrow(modules)),
-                   features = numeric(nrow(modules)),
-                   CCA_corr = numeric(nrow(modules)),
-                   CCA_pval = numeric(nrow(modules)))
+  # parallel set up
+  my.cluster <- parallel::makeCluster(
+    numNodes, 
+    type = "PSOCK")
+  doParallel::registerDoParallel(cl = my.cluster)
   
-  # populate dataframe for each module
-  for (i in 1:nrow(modules)) {
-    # map module numbers to column names
-    df$colNames[i] <- list(colnames(fullData)[unlist(modules[i,4][[1]])])
-    
-    # map module numbers to identifiers
-    df$features[i] <- list(identifierList[unlist(modules[i,4][[1]])])
-    
-    # calculate connectivity
-    connectivity <- (combn(x = modules$indices[i][[1]],
-                           m = 2, # pick pairs
-                           FUN = coVar, fullData=fullData))
-    
-    # run CCA, save out correlation coefficients and wilks-lambda test
-    cca_results     <- cancor(connectivity, externalVar, ycenter = F)
-    df$CCA_corr[i]  <- list(cca_results$cor)
-    if (ncol(connectivity) > 1 | ncol(externalVar) > 1) {
-      df$CCA_pval[i]  <- hush(p.asym(rho = cca_results$cor,
-                                     N = dim(connectivity)[1],
-                                     p = dim(connectivity)[2],
-                                     q = dim(externalVar)[2],
-                                     tstat = "Wilks")$p.value[1])
-    } else { ## if both connectivity and externalVar are one dimensional, use simple, one-tailed correlation test
-      df$CCA_pval[i] <- pt(as.numeric(cca_results$cor)*(sqrt(nrow(df)-2/(1-as.numeric(cca_results$cor)^2))), 
-                           df = nrow(df)-2, 
-                           lower.tail = F)
-    }
-  }
+  # iteration counter
+  i = 0
+  
+  # for each module...
+  results <- foreach (i = 1:length(modules),
+                      .combine = rbind,
+                      .packages = c("CCA", "CCP"),
+                      .export = c("coVar")) %dopar% {
+                        # vector to store results
+                        tmp <- c(i)
+                        
+                        # map module numbers to column names
+                        ## colNames
+                        tmp[2] <- list(colnames(fullData)[unlist(modules[i][[1]])])
+                        
+                        # map module numbers to genes
+                        ## features
+                        tmp[3] <- list(identifierList[unlist(modules[i][[1]])])
+                        
+                        # don't calculate for high dimensional modules
+                        if (choose(length(modules[i][[1]]), 2) > nrow(fullData)) {
+                          tmp[4] = NA ## CCA_corr
+                          tmp[5] = NA ## CCA_pval
+                        } else {
+                          # calculate connectivity
+                          connectivity <- (combn(x = modules[i][[1]],
+                                                 m = 2, # pick pairs
+                                                 FUN = coVar, fullData=fullData))
+                          
+                          # run CCA, save out correlation coefficients and wilks-lambda test
+                          ## CCA_corr and CCA_pval
+                          cca_results <- cancor(connectivity, externalVar, ycenter = F)
+                          tmp[4]      <- list(cca_results$cor)
+                          if (ncol(connectivity) > 1 | ncol(externalVar) > 1) {
+                            tmp[5]  <- hush(p.asym(rho = cca_results$cor,
+                                                   N = dim(connectivity)[1],
+                                                   p = dim(connectivity)[2],
+                                                   q = dim(externalVar)[2],
+                                                   tstat = "Wilks")$p.value[1])
+                          } else { ## if both connectivity and externalVar are one dimensional, use simple, one-tailed correlation test
+                            tmp[5] <- pt(as.numeric(cca_results$cor)*(sqrt(length(modules)-2/(1-as.numeric(cca_results$cor)^2))), 
+                                         df = length(modules)-2, 
+                                         lower.tail = F)
+                          }
+                        }
+                        
+                        return(tmp)
+                      }
+  # close connection
+  parallel::stopCluster(cl = my.cluster)
+  
+  # column names for results df
+  results           <- as.data.frame(results)
+  colnames(results) <- c("moduleNum", "colNames", "features", "CCA_corr", "CCA_pval")
+  
+  # unnest columns that don't need to be lists
+  results <- unnest(results, c(moduleNum, CCA_pval))
   
   # FDR
-  df <- df[order(df$CCA_pval), ]
-  row.names(df) <- 1:nrow(df)
-  df$BHFDR_qval <- p.adjust(df$CCA_pval, method="BH")
+  results            <- results[order(results$CCA_pval), ]
+  results$BHFDR_qval <- p.adjust(results$CCA_pval, method="BH")
   
-  return(df)
+  return(results)
 }
