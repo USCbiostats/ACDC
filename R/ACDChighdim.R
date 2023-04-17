@@ -102,7 +102,7 @@ ACDChighdim <- function(moduleIdentifier = 1, moduleCols, fullData, externalVar,
   colpairs <- subset(colpairs, colpairs$corrMat.vars. >= 0.75)
   
   # connectivity matrix
-  connectivity <- data.frame(toRemove = numeric(40))
+  connectivity <- data.frame(toRemove = numeric(nrow(fullData)))
   for (i in 1:nrow(colpairs)) {
     connectivity <- cbind(connectivity, coVar(dataPair = c(grep(colpairs$X1[i], colnames(fullData)), 
                                                            grep(colpairs$X2[i], colnames(fullData))),
