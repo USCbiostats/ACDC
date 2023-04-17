@@ -15,7 +15,7 @@ ACDCmod(
 \arguments{
 \item{fullData}{data frame or matrix with samples as rows, all probes as columns; each entry should be numeric gene expression or other molecular data values}
 
-\item{modules}{vector of lists where each list contains column numbers from fullData of genes included in module}
+\item{modules}{vector of lists where each list contains column numbers from fullData of features included in module}
 
 \item{externalVar}{data frame, matrix, or vector  containing external variable data to be used for CCA, rows are samples; all elements must be numeric}
 
@@ -41,7 +41,7 @@ ACDCmod detects differential co-expression between a set of genes, such as a mod
 \details{
 For more information about how the co-expression features are calculated, see the coVar documentation.
 
-Following CCA, which determines linear combinations of the co-expression and external feature vectors that maximize the cross-covariance matrix for each module, a Wilks-Lambda test is performed to determine if the correlation between these linear combinations is significant. If they are significant, that implies there is differential co-expression. If there is only one co-expression value for a module (ie two features in the module) and a single external variable, CCA reduces to a simple correlation test, and the t-distribution is used to test for significant correlation (Widmann, 2005). If the number of co-expression features in a particular module is larger than the number of samples, CCA will return correlation coefficients of 1, and p-values and BH FDR q-values will not be calculated. We are working to implement high-dimensional solutions.
+Following CCA, which determines linear combinations of the co-expression and external feature vectors that maximize the cross-covariance matrix for each module, a Wilks-Lambda test is performed to determine if the correlation between these linear combinations is significant. If they are significant, that implies there is differential co-expression. If there is only one co-expression value for a module (ie two features in the module) and a single external variable, CCA reduces to a simple correlation test, and the t-distribution is used to test for significant correlation (Widmann, 2005). If the number of co-expression features in a particular module is larger than the number of samples, CCA will return correlation coefficients of 1, and p-values and BH FDR q-values will not be calculated. See ACDChighdim for our solution.
 }
 \examples{
 #load CCA package for example dataset
