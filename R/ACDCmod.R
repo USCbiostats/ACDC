@@ -41,7 +41,7 @@
 #' ACDCmod(fullData = nutrimouse$lipid,
 #'         modules = mods,
 #'         externalVar = data.frame(diet=as.numeric(nutrimouse$diet), 
-#'         genotype=as.numeric(nutrimouse$genotype)))
+#'                                   genotype=as.numeric(nutrimouse$genotype)))
 #' 
 #' @details For more information about how the co-expression features are calculated, see the coVar documentation.
 #' 

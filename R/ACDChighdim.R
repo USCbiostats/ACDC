@@ -7,6 +7,7 @@
 #' @param fullData data frame or matrix with samples as rows, all features as columns; each entry should be numeric gene expression or other molecular data values
 #' @param externalVar data frame, matrix, or vector containing external variable data to be used for CCA, rows are samples; all elements must be numeric
 #' @param identifierList optional row vector of identifiers, of the same length and order, corresponding to columns in fullData (ex: HUGO symbols for genes); default value is the column names from fullData
+#' @param corrThreshold minimum correlation required between two features to be kept in the dataset; 0 <= corrThreshold <=1; default value is 0.75
 #' @return Data frame, designed to be row binded with output from other ACDC functions, with columns 
 #' 
 #' \describe{
@@ -61,7 +62,7 @@
 #' @import utils
 #' @import stats
 #' @import tidyr
-ACDChighdim <- function(moduleIdentifier = 1, moduleCols, fullData, externalVar, identifierList=colnames(fullData)) {
+ACDChighdim <- function(moduleIdentifier = 1, moduleCols, fullData, externalVar, identifierList=colnames(fullData), corrThreshold = 0.75) {
   
   # to remove "no visible binding" note
   moduleNum <- CCA_pval <- NULL
@@ -84,6 +85,7 @@ ACDChighdim <- function(moduleIdentifier = 1, moduleCols, fullData, externalVar,
   if(nrow(fullData) != nrow(externalVar)) stop("fullData and externalVar must have the same number of rows.")
   if(ncol(fullData) != length(identifierList)) stop("identifierList must be the same length as the number of columns in fullData.")
   if(length(moduleCols) == 0) stop("No modules input.")
+  if(corrThreshold < 0 | corrThreshold > 1) stop("corrThreshold must be between 0 and 1.")
   
   # results set up 
   tmp    <- c(moduleIdentifier)
@@ -98,17 +100,21 @@ ACDChighdim <- function(moduleIdentifier = 1, moduleCols, fullData, externalVar,
   colpairs <- data.frame(vars, corrMat[vars])
   colpairs <- colpairs[order(colpairs$corrMat.vars., decreasing = T), ]
   
-  # save pairs with corr > 0.75
-  colpairs <- subset(colpairs, colpairs$corrMat.vars. >= 0.75)
+  # save pairs with corr > corrThreshold
+  colpairs <- subset(colpairs, colpairs$corrMat.vars. >= corrThreshold)
   
-  # connectivity matrix
-  connectivity <- data.frame(toRemove = numeric(nrow(fullData)))
-  for (i in 1:nrow(colpairs)) {
-    connectivity <- cbind(connectivity, coVar(dataPair = c(grep(colpairs$X1[i], colnames(fullData)), 
-                                                           grep(colpairs$X2[i], colnames(fullData))),
-                                              fullData = fullData))
+  # helper function to calculate covariance
+  connectivity_calc <- function(x, fd) {
+    return(coVar(dataPair = c(grep(x[1], colnames(fd)),
+                              grep(x[2], colnames(fd))),
+                 fullData = fd))
   }
-  connectivity[1] <- NULL
+  
+  # calculate connectivity for each feature pair (row) in colpairs 
+  connectivity <- apply(colpairs, MARGIN = 1, FUN = connectivity_calc, fd = fullData)
+  
+  # if still high dimensional, stop
+  if(ncol(connectivity) > nrow(fullData)) stop("Problem is still high dimensional. Choose a higher corrThreshold.")
   
   # CCA
   cca_results <- cancor(connectivity, externalVar, ycenter = F)

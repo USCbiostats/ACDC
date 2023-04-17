@@ -37,7 +37,7 @@
 #' ACDC(fullData = nutrimouse$lipid,
 #'      ILC = 0.50, 
 #'      externalVar = data.frame(diet=as.numeric(nutrimouse$diet), 
-#'      genotype=as.numeric(nutrimouse$genotype)))
+#'                               genotype=as.numeric(nutrimouse$genotype)))
 #' 
 #' @details Modules are identified by Partition, an agglomerative data reduction method which performs both feature condensation and extraction based on a user provided information loss criterion (ILC). Feature condensation into modules are only accepted if the intraclass correlation between the features is at least the ILC. For more information about how the co-expression features are calculated, see the coVar documentation.
 #' 
