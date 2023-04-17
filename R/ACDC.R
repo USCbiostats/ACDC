@@ -120,7 +120,7 @@ ACDC <- function(fullData, ILC = 0.50, externalVar, identifierList = colnames(fu
                         if (choose(length(modules[i][[1]]), 2) > nrow(fullData)) {
                           tmp[4] = NA ## CCA_corr
                           tmp[5] = NA ## CCA_pval
-                          print(paste0("CCA values not calculated for module ", i, ". Use ACDChighdim to calculate values for this module."))
+                          message("CCA values not calculated for module ", i, ". Use ACDChighdim to calculate values for this module.")
                         } else {
                           # calculate connectivity
                           connectivity <- (combn(x = modules[i][[1]],
