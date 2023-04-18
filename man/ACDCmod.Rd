@@ -67,7 +67,7 @@ ACDCmod(fullData = nutrimouse$lipid,
 ACDCmod(fullData = nutrimouse$lipid,
         modules = mods,
         externalVar = data.frame(diet=as.numeric(nutrimouse$diet), 
-        genotype=as.numeric(nutrimouse$genotype)))
+                                  genotype=as.numeric(nutrimouse$genotype)))
 
 }
 \references{

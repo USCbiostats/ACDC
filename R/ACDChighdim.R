@@ -110,6 +110,25 @@ ACDChighdim <- function(moduleIdentifier = 1, moduleCols, fullData, externalVar,
                  fullData = fd))
   }
   
+  # stop if no data pairs
+  if(nrow(colpairs) == 0) {
+    # set remaining values to null
+    tmp[4] <- NA
+    tmp[5] <- NA
+    
+    # return same output that will rowbind with ACDC output
+    results <- as.data.frame(t(tmp))
+    colnames(results) <- c("moduleNum", "colNames", "features", "CCA_corr", "CCA_pval")
+    
+    # unnest columns that don't need to be lists
+    results <- unnest(results, c(moduleNum, CCA_pval))
+    
+    # tell user that no significantly correlated pairs found
+    message("No pairs detected above correlation threshold of ", corrThreshold, ". Choose a lower threshold.")
+    
+    return(results)
+  }
+  
   # calculate connectivity for each feature pair (row) in colpairs 
   connectivity <- apply(colpairs, MARGIN = 1, FUN = connectivity_calc, fd = fullData)
   

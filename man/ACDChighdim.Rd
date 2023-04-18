@@ -9,7 +9,8 @@ ACDChighdim(
   moduleCols,
   fullData,
   externalVar,
-  identifierList = colnames(fullData)
+  identifierList = colnames(fullData),
+  corrThreshold = 0.75
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ ACDChighdim(
 \item{externalVar}{data frame, matrix, or vector containing external variable data to be used for CCA, rows are samples; all elements must be numeric}
 
 \item{identifierList}{optional row vector of identifiers, of the same length and order, corresponding to columns in fullData (ex: HUGO symbols for genes); default value is the column names from fullData}
+
+\item{corrThreshold}{minimum correlation required between two features to be kept in the dataset; 0 <= corrThreshold <=1; default value is 0.75}
 }
 \value{
 Data frame, designed to be row binded with output from other ACDC functions, with columns

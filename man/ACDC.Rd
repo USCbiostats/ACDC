@@ -62,7 +62,7 @@ ACDC(fullData = nutrimouse$lipid,
 ACDC(fullData = nutrimouse$lipid,
      ILC = 0.50, 
      externalVar = data.frame(diet=as.numeric(nutrimouse$diet), 
-     genotype=as.numeric(nutrimouse$genotype)))
+                              genotype=as.numeric(nutrimouse$genotype)))
 
 }
 \references{
