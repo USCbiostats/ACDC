@@ -110,8 +110,8 @@ ACDChighdim <- function(moduleIdentifier = 1, moduleCols, fullData, externalVar,
                  fullData = fd))
   }
   
-  # stop if no data pairs
-  if(nrow(colpairs) == 0) {
+  # stop if no data pairs or still high dimensional
+  if(nrow(colpairs) == 0 | nrow(colpairs) > nrow(fullData)) {
     # set remaining values to null
     tmp[4] <- NA
     tmp[5] <- NA
@@ -123,17 +123,17 @@ ACDChighdim <- function(moduleIdentifier = 1, moduleCols, fullData, externalVar,
     # unnest columns that don't need to be lists
     results <- unnest(results, c(moduleNum, CCA_pval))
     
-    # tell user that no significantly correlated pairs found
-    message("No pairs detected above correlation threshold of ", corrThreshold, ". Choose a lower threshold.")
+    # tell user if no significantly correlated pairs found
+    if(nrow(colpairs) == 0) message("No pairs detected above correlation threshold of ", corrThreshold, " for module ", moduleIdentifier, ". Choose a lower threshold.")
+    
+    # tell user if still high dimensional
+    if(nrow(colpairs) > nrow(fullData)) message("The problem is still high dimensional with ", nrow(colpairs), " data pairs with correlation above ", corrThreshold, " for module ", moduleIdentifier, ". Choose a higher threshold.")
     
     return(results)
   }
   
   # calculate connectivity for each feature pair (row) in colpairs 
   connectivity <- apply(colpairs, MARGIN = 1, FUN = connectivity_calc, fd = fullData)
-  
-  # if still high dimensional, stop
-  if(ncol(connectivity) > nrow(fullData)) stop("Problem is still high dimensional. Choose a higher corrThreshold.")
   
   # CCA
   cca_results <- cancor(connectivity, externalVar, ycenter = F)
