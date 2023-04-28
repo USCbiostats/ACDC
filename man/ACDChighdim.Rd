@@ -27,12 +27,13 @@ ACDChighdim(
 \item{corrThreshold}{minimum correlation required between two features to be kept in the dataset; 0 <= corrThreshold <=1; default value is 0.75}
 }
 \value{
-Data frame, designed to be row binded with output from other ACDC functions, with columns
+Data frame, designed to be row binded with output from other ACDC functions after removing column four, with columns
 
 \describe{
 \item{moduleNum}{module identifier}
 \item{colNames}{list of column names from fullData of the features in the module}
 \item{features}{list of identifiers from input parameter "identifierList" for all features in the module}
+\item{numPairsUsed}{number of feature pairs with correlation above corrThreshold}
 \item{CCA_corr}{list of CCA canonical correlation coefficients}
 \item{CCA_pval}{Wilks-Lamda F-test p-value or t-test p-value}
 }

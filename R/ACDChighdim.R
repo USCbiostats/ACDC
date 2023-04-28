@@ -8,12 +8,13 @@
 #' @param externalVar data frame, matrix, or vector containing external variable data to be used for CCA, rows are samples; all elements must be numeric
 #' @param identifierList optional row vector of identifiers, of the same length and order, corresponding to columns in fullData (ex: HUGO symbols for genes); default value is the column names from fullData
 #' @param corrThreshold minimum correlation required between two features to be kept in the dataset; 0 <= corrThreshold <=1; default value is 0.75
-#' @return Data frame, designed to be row binded with output from other ACDC functions, with columns 
+#' @return Data frame, designed to be row binded with output from other ACDC functions after removing column four, with columns 
 #' 
 #' \describe{
 #' \item{moduleNum}{module identifier}
 #' \item{colNames}{list of column names from fullData of the features in the module}
 #' \item{features}{list of identifiers from input parameter "identifierList" for all features in the module}
+#' \item{numPairsUsed}{number of feature pairs with correlation above corrThreshold}
 #' \item{CCA_corr}{list of CCA canonical correlation coefficients}
 #' \item{CCA_pval}{Wilks-Lamda F-test p-value or t-test p-value}
 #' }
@@ -62,6 +63,7 @@
 #' @import utils
 #' @import stats
 #' @import tidyr
+#' @import partition
 ACDChighdim <- function(moduleIdentifier = 1, moduleCols, fullData, externalVar, identifierList=colnames(fullData), corrThreshold = 0.75) {
   
   # to remove "no visible binding" note
@@ -102,6 +104,7 @@ ACDChighdim <- function(moduleIdentifier = 1, moduleCols, fullData, externalVar,
   
   # save pairs with corr > corrThreshold
   colpairs <- subset(colpairs, colpairs$corrMat.vars. >= corrThreshold)
+  tmp[4]   <- nrow(colpairs)
   
   # helper function to calculate covariance
   connectivity_calc <- function(x, fd) {
@@ -110,24 +113,21 @@ ACDChighdim <- function(moduleIdentifier = 1, moduleCols, fullData, externalVar,
                  fullData = fd))
   }
   
-  # stop if no data pairs or still high dimensional
-  if(nrow(colpairs) == 0 | nrow(colpairs) > nrow(fullData)) {
+  # stop if no data pairs
+  if(nrow(colpairs) == 0) {
     # set remaining values to null
-    tmp[4] <- NA
     tmp[5] <- NA
+    tmp[6] <- NA
     
     # return same output that will rowbind with ACDC output
     results <- as.data.frame(t(tmp))
-    colnames(results) <- c("moduleNum", "colNames", "features", "CCA_corr", "CCA_pval")
+    colnames(results) <- c("moduleNum", "colNames", "features", "numPairsUsed", "CCA_corr", "CCA_pval")
     
     # unnest columns that don't need to be lists
-    results <- unnest(results, c(moduleNum, CCA_pval))
+    results <- unnest(results, c(moduleNum, numPairsUsed, CCA_pval))
     
     # tell user if no significantly correlated pairs found
     if(nrow(colpairs) == 0) message("No pairs detected above correlation threshold of ", corrThreshold, " for module ", moduleIdentifier, ". Choose a lower threshold.")
-    
-    # tell user if still high dimensional
-    if(nrow(colpairs) > nrow(fullData)) message("The problem is still high dimensional with ", nrow(colpairs), " data pairs with correlation above ", corrThreshold, " for module ", moduleIdentifier, ". Choose a higher threshold.")
     
     return(results)
   }
@@ -135,27 +135,37 @@ ACDChighdim <- function(moduleIdentifier = 1, moduleCols, fullData, externalVar,
   # calculate connectivity for each feature pair (row) in colpairs 
   connectivity <- apply(colpairs, MARGIN = 1, FUN = connectivity_calc, fd = fullData)
   
-  # CCA
-  cca_results <- cancor(connectivity, externalVar, ycenter = F)
-  tmp[4]      <- list(cca_results$cor)
+  # run CCA
+  ## partition connectivity if high dimensional
+  if(nrow(colpairs) > nrow(fullData)) {
+    message("The problem is still high dimensional with ", nrow(colpairs), " data pairs with correlation above ", corrThreshold, " for module ", moduleIdentifier, ". Using Partition to reduce dimensionality.")
+    
+    # run CCA on partitioned data
+    cca_results <- cancor(partition(connectivity, threshold = 0.50)$reduced_data, externalVar, ycenter = F)
+  } else {
+    cca_results <- cancor(connectivity, externalVar, ycenter = F)
+  }
+  
+  # store results and calculate p-value
+  tmp[5] <- list(cca_results$cor)
   if (ncol(connectivity) > 1 | ncol(externalVar) > 1) {
-    tmp[5] <- hush(p.asym(rho = cca_results$cor,
+    tmp[6] <- hush(p.asym(rho = cca_results$cor,
                           N = dim(connectivity)[1],
                           p = dim(connectivity)[2],
                           q = dim(externalVar)[2],
                           tstat = "Wilks")$p.value[1])
   } else { ## if both connectivity and externalVar are one dimensional, use simple, one-tailed correlation test
-    tmp[5] <- pt(as.numeric(cca_results$cor)*(sqrt(length(moduleCols)-2/(1-as.numeric(cca_results$cor)^2))), 
+    tmp[6] <- pt(as.numeric(cca_results$cor)*(sqrt(length(moduleCols)-2/(1-as.numeric(cca_results$cor)^2))), 
                  df = length(moduleCols)-2, 
                  lower.tail = F)
   }
   
   # return same output that will rowbind with ACDC output
   results <- as.data.frame(t(tmp))
-  colnames(results) <- c("moduleNum", "colNames", "features", "CCA_corr", "CCA_pval")
+  colnames(results) <- c("moduleNum", "colNames", "features", "numPairsUsed", "CCA_corr", "CCA_pval")
   
   # unnest columns that don't need to be lists
-  results <- unnest(results, c(moduleNum, CCA_pval))
+  results <- unnest(results, c(moduleNum, numPairsUsed, CCA_pval))
   
   return(results)
 }
