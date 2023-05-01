@@ -127,7 +127,7 @@ ACDChighdim <- function(moduleIdentifier = 1, moduleCols, fullData, externalVar,
     results <- unnest(results, c(moduleNum, numPairsUsed, CCA_pval))
     
     # tell user if no significantly correlated pairs found
-    if(nrow(colpairs) == 0) message("No pairs detected above correlation threshold of ", corrThreshold, " for module ", moduleIdentifier, ". Choose a lower threshold.")
+    message("No pairs detected above correlation threshold of ", corrThreshold, " for module ", moduleIdentifier, ". Choose a lower threshold.")
     
     return(results)
   }
