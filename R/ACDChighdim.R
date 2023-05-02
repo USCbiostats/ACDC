@@ -42,7 +42,7 @@
 #'             externalVar = data.frame(diet=as.numeric(nutrimouse$diet), 
 #'                                      genotype=as.numeric(nutrimouse$genotype)))
 #' 
-#' @details If the number of co-expression features in a particular module is larger than the number of samples, CCA will return correlation coefficients of 1, and p-values and BH FDR q-values will not be calculated. This function accepts one of these high dimension modules and reduces the dimensionality by calculating the pairwise correlations for all features and only keeping feature pairs with |correlation| > 0.75. We posit that these highly correlated pairs are the skeleton structure of the full module and therefore an appropriate approximation. Once this structure is identified, co-expression values are calculated and CCA is performed as in ACDC.
+#' @details If the number of co-expression features in a particular module is larger than the number of samples, CCA will return correlation coefficients of 1, and p-values and BH FDR q-values will not be calculated. This function accepts one of these high dimension modules and reduces the dimensionality by calculating the pairwise correlations for all features and only keeping feature pairs with |correlation| > the user defined corrThreshold with a maximum number of features pairs of \eqn{\lfloor\frac{N}{2}\rfloor}. We posit that these highly correlated pairs are the skeleton structure of the full module and therefore an appropriate approximation. Once this structure is identified, co-expression values are calculated and CCA is performed as in ACDC.
 #' 
 #' For more information about how the co-expression features are calculated, see the coVar documentation.
 #' 
@@ -63,7 +63,6 @@
 #' @import utils
 #' @import stats
 #' @import tidyr
-#' @import partition
 ACDChighdim <- function(moduleIdentifier = 1, moduleCols, fullData, externalVar, identifierList=colnames(fullData), corrThreshold = 0.75) {
   
   # to remove "no visible binding" note
@@ -102,26 +101,26 @@ ACDChighdim <- function(moduleIdentifier = 1, moduleCols, fullData, externalVar,
   colpairs <- data.frame(vars, corrMat[vars])
   colpairs <- colpairs[order(colpairs$corrMat.vars., decreasing = T), ]
   
-  # save pairs with corr > corrThreshold
+  # subset colpairs based on user threshold
   colpairs <- subset(colpairs, colpairs$corrMat.vars. >= corrThreshold)
-  tmp[4]   <- nrow(colpairs)
   
-  # helper function to calculate covariance
-  connectivity_calc <- function(x, fd) {
-    return(coVar(dataPair = c(grep(x[1], colnames(fd)),
-                              grep(x[2], colnames(fd))),
-                 fullData = fd))
+  # if still too many pairs, subset to first n/2 pairs
+  if (nrow(colpairs) > floor(nrow(fullData)/2)) {
+    message(nrow(colpairs), " feature pairs selected for module ", moduleIdentifier, " using a correlation threshold of ", corrThreshold,". Using the N/2 = ", floor(nrow(fullData)/2)," most correlated pairs instead.")
+    
+    colpairs <- colpairs[1:floor(nrow(fullData)/2), ]
   }
   
   # stop if no data pairs
   if(nrow(colpairs) == 0) {
     # set remaining values to null
+    tmp[4] <- NA
     tmp[5] <- NA
-    tmp[6] <- NA
+    tmp[6] <- nrow(colpairs)
     
     # return same output that will rowbind with ACDC output
     results <- as.data.frame(t(tmp))
-    colnames(results) <- c("moduleNum", "colNames", "features", "numPairsUsed", "CCA_corr", "CCA_pval")
+    colnames(results) <- c("moduleNum", "colNames", "features", "CCA_corr", "CCA_pval", "numPairsUsed")
     
     # unnest columns that don't need to be lists
     results <- unnest(results, c(moduleNum, numPairsUsed, CCA_pval))
@@ -132,40 +131,40 @@ ACDChighdim <- function(moduleIdentifier = 1, moduleCols, fullData, externalVar,
     return(results)
   }
   
+  # helper function to calculate covariance
+  connectivity_calc <- function(x, fd) {
+    return(coVar(dataPair = c(grep(x[1], colnames(fd)),
+                              grep(x[2], colnames(fd))),
+                 fullData = fd))
+  }
+  
   # calculate connectivity for each feature pair (row) in colpairs 
   connectivity <- apply(colpairs, MARGIN = 1, FUN = connectivity_calc, fd = fullData)
   
-  # run CCA
-  ## partition connectivity if high dimensional
-  if(nrow(colpairs) > nrow(fullData)) {
-    message("The problem is still high dimensional with ", nrow(colpairs), " data pairs with correlation above ", corrThreshold, " for module ", moduleIdentifier, ". Using Partition to reduce dimensionality.")
-    
-    # run CCA on partitioned data
-    cca_results <- cancor(partition(connectivity, threshold = 0.50)$reduced_data, externalVar, ycenter = F)
-  } else {
-    cca_results <- cancor(connectivity, externalVar, ycenter = F)
-  }
-  
-  # store results and calculate p-value
-  tmp[5] <- list(cca_results$cor)
+  # run CCA and calculate p-value
+  cca_results <- cancor(connectivity, externalVar, ycenter = F)
+  tmp[4]      <- list(cca_results$cor)
   if (ncol(connectivity) > 1 | ncol(externalVar) > 1) {
-    tmp[6] <- hush(p.asym(rho = cca_results$cor,
+    tmp[5] <- hush(p.asym(rho = cca_results$cor,
                           N = dim(connectivity)[1],
                           p = dim(connectivity)[2],
                           q = dim(externalVar)[2],
                           tstat = "Wilks")$p.value[1])
   } else { ## if both connectivity and externalVar are one dimensional, use simple, one-tailed correlation test
-    tmp[6] <- pt(as.numeric(cca_results$cor)*(sqrt(length(moduleCols)-2/(1-as.numeric(cca_results$cor)^2))), 
+    tmp[5] <- pt(as.numeric(cca_results$cor)*(sqrt(length(moduleCols)-2/(1-as.numeric(cca_results$cor)^2))), 
                  df = length(moduleCols)-2, 
                  lower.tail = F)
   }
   
+  # save out number of pairs used
+  tmp[6] <- nrow(colpairs)
+  
   # return same output that will rowbind with ACDC output
   results <- as.data.frame(t(tmp))
-  colnames(results) <- c("moduleNum", "colNames", "features", "numPairsUsed", "CCA_corr", "CCA_pval")
+  colnames(results) <- c("moduleNum", "colNames", "features", "CCA_corr", "CCA_pval", "numPairsUsed")
   
   # unnest columns that don't need to be lists
-  results <- unnest(results, c(moduleNum, numPairsUsed, CCA_pval))
+  results <- unnest(results, c(moduleNum, CCA_pval, numPairsUsed))
   
   return(results)
 }
