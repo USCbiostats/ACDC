@@ -4,11 +4,10 @@ Association of covariance to detect differential co-expression (ACDC) is a novel
 
 ## Installation
 
-You can install the development version of modACDC from GitHub with:
+You can install modACDC with:
 
 ``` r
-# install.packages("remotes")
-remotes::install_github("USCbiostats/ACDC")
+install.packages("modACDC")
 ```
 
 ## OSCA
