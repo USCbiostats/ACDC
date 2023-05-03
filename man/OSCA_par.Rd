@@ -88,7 +88,7 @@ Millstein J, Battaglin F, Barrett M, Cao S, Zhang W, Stintzing S, et al. Partiti
 Queen K, Nguyen MN, Gilliland F, Chun S, Raby BA, Millstein J. ACDC: a general approach for detecting phenotype or exposure associated co-expression. (in press). \emph{Frontiers in Medicine} (2023).
 }
 \seealso{
-OSCA software - \url{https://yanglab.westlake.edu.cn/software/osca}
+OSCA software - \url{https://yanglab.westlake.edu.cn/software/osca/}
 }
 \author{
 Katelyn Queen, \email{kjqueen@usc.edu}

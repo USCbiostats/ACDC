@@ -50,15 +50,7 @@ library(CCA)
 # load dataset
 data("nutrimouse")
 
-# generate random phenotype
-r.pheno <- rnorm(nrow(nutrimouse$lipid))
-
-# run function for random phenotype
-ACDC(fullData = nutrimouse$lipid,
-     ILC = 0.50, 
-     externalVar = r.pheno)
-
-# run function for diet and genotype (non-random)
+# run function for diet and genotype
 ACDC(fullData = nutrimouse$lipid,
      ILC = 0.50, 
      externalVar = data.frame(diet=as.numeric(nutrimouse$diet), 

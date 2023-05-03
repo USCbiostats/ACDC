@@ -1,6 +1,6 @@
 Package: modACDC
-Title: Association of covariance for detecting differential co-expression
-Version: 1.0.0.9000
+Title: Association of Covariance for Detecting Differential Co-Expression
+Version: 1.0.0
 Authors@R: 
     c(person(given = "Katelyn", 
 		family = "Queen", 
