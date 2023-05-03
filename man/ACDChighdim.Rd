@@ -16,7 +16,7 @@ ACDChighdim(
 \arguments{
 \item{moduleIdentifier}{the module identifier given by Partition or other dimension reduction/clustering algorithm; default is 1}
 
-\item{moduleCols}{list containing column numbers from fullData of features included in module}
+\item{moduleCols}{list containing indices of column locations in fullData that specify features in the module}
 
 \item{fullData}{data frame or matrix with samples as rows, all features as columns; each entry should be numeric gene expression or other molecular data values}
 
@@ -24,18 +24,18 @@ ACDChighdim(
 
 \item{identifierList}{optional row vector of identifiers, of the same length and order, corresponding to columns in fullData (ex: HUGO symbols for genes); default value is the column names from fullData}
 
-\item{corrThreshold}{minimum correlation required between two features to be kept in the dataset; 0 <= corrThreshold <=1; default value is 0.75}
+\item{corrThreshold}{minimum correlation required between two features to be kept in the dataset; 0 \eqn{\leq} corrThreshold \eqn{\leq} 1; default value is 0.75}
 }
 \value{
-Data frame, designed to be row binded with output from other ACDC functions after removing column four, with columns
+Data frame, designed to be row binded with output from other ACDC functions after removing the final column, with columns
 
 \describe{
 \item{moduleNum}{module identifier}
 \item{colNames}{list of column names from fullData of the features in the module}
 \item{features}{list of identifiers from input parameter "identifierList" for all features in the module}
-\item{numPairsUsed}{number of feature pairs with correlation above corrThreshold}
 \item{CCA_corr}{list of CCA canonical correlation coefficients}
 \item{CCA_pval}{Wilks-Lamda F-test p-value or t-test p-value}
+\item{numPairsUsed}{number of feature pairs with correlation above corrThreshold}
 }
 }
 \description{
@@ -73,11 +73,13 @@ ACDChighdim(moduleIdentifier = 1,
 
 }
 \references{
-Benjamini Y, Hochberg Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal statistical society: series B (Methodological) 57 (1995) 289–300.
+Benjamini Y, Hochberg Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. \emph{Journal of the Royal statistical society: series B (Methodological)} \strong{57} (1995) 289–300.
 
-Martin P, et al. Novel aspects of PPARalpha-mediated regulation of lipid and xenobiotic metabolism revealed through a nutrigenomic study. Hepatology, in press, 2007.
+Martin P, et al. Novel aspects of PPARalpha-mediated regulation of lipid and xenobiotic metabolism revealed through a nutrigenomic study. \emph{Hepatology}, in press, 2007.
 
-Widmann M. One-Dimensional CCA and SVD, and Their Relationship to Regression Maps. Journal of Climate 18 (2005) 2785–2792. doi:10.1175/jcli3424.1.
+Queen K, Nguyen MN, Gilliland F, Chun S, Raby BA, Millstein J. ACDC: a general approach for detecting phenotype or exposure associated co-expression. (in press). \emph{Frontiers in Medicine} (2023).
+
+Widmann M. One-Dimensional CCA and SVD, and Their Relationship to Regression Maps. \emph{Journal of Climate} \strong{18} (2005) 2785–2792. doi:10.1175/jcli3424.1.
 }
 \author{
 Katelyn Queen, \email{kjqueen@usc.edu}

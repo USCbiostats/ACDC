@@ -2,12 +2,14 @@
 #'
 #' @description Function to return the percent variance explained in an external phenotype for a single dataset
 #' 
-#' @param df n x p dataframe or matrix of gene expression values with no ID column
+#' @param df n x p dataframe or matrix of numeric -omics values with no ID column
 #' @param externalVar vector of length n of external variable values with no ID column
 #' @param oscaPath absolute path to OSCA software
 #' @return Row of OREML output containing percent variance explained in external data and standard error
 #' 
-#' @details OmicS-data-based Complex trait Analysis (OSCA) is a suite of C++ functions. Here, we use OSCA's Omics Restricted Maximum Likelihood (OREML) method to estimate the percent of variance in an external phenotype that can be explained by an omics profile, akin to heritability estimates in GWAS.
+#' @details OmicS-data-based Complex trait Analysis (OSCA) is a suite of C++ functions. In order to use the OSCA functions, the user must specify the absolute path to the OSCA software, which can be downloaded from the Yang Lab website [here](https://yanglab.westlake.edu.cn/software/osca/#Download).
+#' 
+#' Here, we use OSCA's Omics Restricted Maximum Likelihood (OREML) method to estimate the percent of variance in an external phenotype that can be explained by an omics profile, akin to heritability estimates in GWAS.
 #' 
 #' @examples 
 #' #load CCA package for example dataset
@@ -32,11 +34,13 @@
 #' #                  oscaPath = "pathHere")
 #' 
 #' @references 
-#' Benjamini Y, Hochberg Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal statistical society: series B (Methodological) 57 (1995) 289–300.
+#' Benjamini Y, Hochberg Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. *Journal of the Royal statistical society: series B (Methodological)* **57** (1995) 289–300.
 #' 
-#' Martin P, et al. Novel aspects of PPARalpha-mediated regulation of lipid and xenobiotic metabolism revealed through a nutrigenomic study. Hepatology, in press, 2007.
+#' Martin P, et al. Novel aspects of PPARalpha-mediated regulation of lipid and xenobiotic metabolism revealed through a nutrigenomic study. *Hepatology*, in press, 2007.
 #' 
-#' Millstein J, Battaglin F, Barrett M, Cao S, Zhang W, Stintzing S, et al. Partition: a surjective mapping approach for dimensionality reduction. Bioinformatics 36 (2019) 676–681. doi:10.1093/bioinformatics/ btz661.
+#' Millstein J, Battaglin F, Barrett M, Cao S, Zhang W, Stintzing S, et al. Partition: a surjective mapping approach for dimensionality reduction. *Bioinformatics* **36** (2019) 676–681. doi:10.1093/bioinformatics/ btz661.
+#' 
+#' Queen K, Nguyen MN, Gilliland F, Chun S, Raby BA, Millstein J. ACDC: a general approach for detecting phenotype or exposure associated co-expression. (in press). *Frontiers in Medicine* (2023).
 #' 
 #' @seealso OSCA software - \url{https://yanglab.westlake.edu.cn/software/osca}
 #' 

@@ -15,7 +15,7 @@ ACDC(
 \arguments{
 \item{fullData}{data frame or matrix with samples as rows, all features as columns; each entry should be numeric gene expression or other molecular data values}
 
-\item{ILC}{information loss criterion for Partition, or the minimum intra-class correlation required for features to be condensed; 0 <= ILC <= 1; default is 0.50}
+\item{ILC}{information loss criterion for Partition, or the minimum intra-class correlation required for features to be condensed; 0 \eqn{\leq} ILC \eqn{\leq} 1; default is 0.50}
 
 \item{externalVar}{data frame, matrix, or vector containing external variable data to be used for CCA, rows are samples; all elements must be numeric}
 
@@ -66,13 +66,15 @@ ACDC(fullData = nutrimouse$lipid,
 
 }
 \references{
-Benjamini Y, Hochberg Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal statistical society: series B (Methodological) 57 (1995) 289–300.
+Benjamini Y, Hochberg Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. \emph{Journal of the Royal statistical society: series B (Methodological)} \strong{57} (1995) 289–300.
 
-Martin P, et al. Novel aspects of PPARalpha-mediated regulation of lipid and xenobiotic metabolism revealed through a nutrigenomic study. Hepatology, in press, 2007.
+Martin P, et al. Novel aspects of PPARalpha-mediated regulation of lipid and xenobiotic metabolism revealed through a nutrigenomic study. \emph{Hepatology}, in press, 2007.
 
-Millstein J, Battaglin F, Barrett M, Cao S, Zhang W, Stintzing S, et al. Partition: a surjective mapping approach for dimensionality reduction. Bioinformatics 36 (2019) 676–681. doi:10.1093/bioinformatics/ btz661.
+Millstein J, Battaglin F, Barrett M, Cao S, Zhang W, Stintzing S, et al. Partition: a surjective mapping approach for dimensionality reduction. \emph{Bioinformatics} \strong{36} (2019) 676–681. doi:10.1093/bioinformatics/ btz661.
 
-Widmann M. One-Dimensional CCA and SVD, and Their Relationship to Regression Maps. Journal of Climate 18 (2005) 2785–2792. doi:10.1175/jcli3424.1.
+Queen K, Nguyen MN, Gilliland F, Chun S, Raby BA, Millstein J. ACDC: a general approach for detecting phenotype or exposure associated co-expression. (in press). \emph{Frontiers in Medicine} (2023).
+
+Widmann M. One-Dimensional CCA and SVD, and Their Relationship to Regression Maps. \emph{Journal of Climate} \strong{18} (2005) 2785–2792. doi:10.1175/jcli3424.1.
 }
 \author{
 Katelyn Queen, \email{kjqueen@usc.edu}

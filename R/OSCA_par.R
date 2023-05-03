@@ -1,13 +1,13 @@
 #' OSCA_par
 #'
-#' @description Function to return a dataframe of ILCs and percent variance explained in an external phenotype for a range of ILCs between zero and one.
+#' @description OSCA_par determines the percent variance explained in an external variable (exposures or responses) for a range of increasingly reduced datasets. Dimension reduction is done with Partition, where features are only condensed into modules if the intraclass correlation between the features is at least the user-supplied information loss criterion (ILC), 0 <= ILC <= 1. An ILC of one returns the full dataset with no reduction, and an ILC of zero returns one module of all input features, reducing the dataset to the mean value. For each ILC value, with the number of ILCs tested determined by input parameter ILCincrement, the function returns the point estimate and standard error of the percent variance explained in the observed external variable by the reduced dataset. If input parameter permute is true, the function also returns the same values for a random permutation of the external variable. 
 #' 
-#' @param df n x p data frame or matrix of gene expression values with no ID column
+#' @param df n x p data frame or matrix of numeric -omics values with no ID column
 #' @param externalVar vector of length n of external variable values with no ID column
 #' @param ILCincrement float between zero and one determining interval between tested ILC values; default is 0.05
 #' @param oscaPath absolute path to OSCA software
 #' @param numNodes number of available compute nodes for parallelization; default is 1
-#' @param permute boolean value for whether or not to include permutations; default is true
+#' @param permute boolean value for whether or not to calculate values for a random permutation of the external variable; default is true
 #' @return Data frame with columns
 #' 
 #' \describe{
@@ -20,7 +20,11 @@
 #' \item{SE_Permuted}{standard error of the percent variance estimate for permuted external variable; only if input parameter "permute" is true}
 #' }
 #' 
-#' @details OmicS-data-based Complex trait Analysis (OSCA) is a suite of C++ functions. Here, we use OSCA's Omics Restricted Maximum Likelihood (OREML) method to estimate the percent of variance in an external phenotype that can be explained by an omics profile, akin to heritability estimates in GWAS. OREML is called twice for each ILC tested if permutations are included.
+#' @details OmicS-data-based Complex trait Analysis (OSCA) is a suite of C++ functions. In order to use the OSCA functions, the user must specify the absolute path to the OSCA software, which can be downloaded from the Yang Lab website [here](https://yanglab.westlake.edu.cn/software/osca/#Download).
+#' 
+#' Here, we use OSCA's Omics Restricted Maximum Likelihood (OREML) method to estimate the percent of variance in an external phenotype that can be explained by an omics profile, akin to heritability estimates in GWAS. OREML is called twice for each ILC tested if permutations are included.
+#' 
+#' Dimension reduction is done with Partition, an agglomerative data reduction method which performs both feature condensation and extraction based on a user provided information loss criterion (ILC). Feature condensation into modules are only accepted if the intraclass correlation between the features is at least the ILC.
 #' 
 #' @examples 
 #' #load CCA package for example dataset
@@ -51,11 +55,13 @@
 #' #          permute = T)
 #' 
 #' @references 
-#' Benjamini Y, Hochberg Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal statistical society: series B (Methodological) 57 (1995) 289–300.
+#' Benjamini Y, Hochberg Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. *Journal of the Royal statistical society: series B (Methodological)* **57** (1995) 289–300.
 #' 
-#' Martin P, et al. Novel aspects of PPARalpha-mediated regulation of lipid and xenobiotic metabolism revealed through a nutrigenomic study. Hepatology, in press, 2007.
+#' Martin P, et al. Novel aspects of PPARalpha-mediated regulation of lipid and xenobiotic metabolism revealed through a nutrigenomic study. *Hepatology*, in press, 2007.
 #' 
-#' Millstein J, Battaglin F, Barrett M, Cao S, Zhang W, Stintzing S, et al. Partition: a surjective mapping approach for dimensionality reduction. Bioinformatics 36 (2019) 676–681. doi:10.1093/bioinformatics/ btz661.
+#' Millstein J, Battaglin F, Barrett M, Cao S, Zhang W, Stintzing S, et al. Partition: a surjective mapping approach for dimensionality reduction. *Bioinformatics* **36** (2019) 676–681. doi:10.1093/bioinformatics/ btz661.
+#' 
+#' Queen K, Nguyen MN, Gilliland F, Chun S, Raby BA, Millstein J. ACDC: a general approach for detecting phenotype or exposure associated co-expression. (in press). *Frontiers in Medicine* (2023).
 #' 
 #' @seealso OSCA software - \url{https://yanglab.westlake.edu.cn/software/osca}
 #' 

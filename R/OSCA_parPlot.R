@@ -1,14 +1,15 @@
 #' OSCA_parPlot
 #'
-#' @description Function to return a graph comparing percent variance explained in an external phenotype and information lost/percent reduction for both observed and permuted data
+#' @description OSCA_parPlot creates a graph of the output from the OSCA_par function, plotting percent variance explained in an external variable (exposure or response) against information lost/percent reduction for both observed and permuted data.
 #' 
 #' @param df output from OSCA_par function with permutations
 #' @param externalVarName string of name of external variable for graph labels; default is blank
 #' @param dataName string of name of data for graph labels; default is blank
 #' @return ggplot object
 #' 
-#' @details OmicS-data-based Complex trait Analysis (OSCA) is a suite of C++ functions. In OSCA_par, we use OSCA's Omics Restricted Maximum Likelihood (OREML) method to estimate the percent of variance in an external phenotype that can be explained by an omics profile, akin to heritability estimates in GWAS. The produced plot shows the percent variance explained in an external variable at varying levels of dataset reduction, calculated for observed external variables in blue and permuted external variables in red. An information loss value of 0 represents the unreduced dataset, and an information loss level of 100 represents the data being reduced to the average expression of all features.
+#' @details OmicS-data-based Complex trait Analysis (OSCA) is a suite of C++ functions. In order to use the OSCA functions, the user must specify the absolute path to the OSCA software, which can be downloaded from the Yang Lab website [here](https://yanglab.westlake.edu.cn/software/osca/#Download).
 #' 
+#' In OSCA_par, we use OSCA's Omics Restricted Maximum Likelihood (OREML) method to estimate the percent of variance in an external phenotype that can be explained by an omics profile, akin to heritability estimates in GWAS. The produced plot shows the percent variance explained in an external variable at varying levels of dataset reduction, calculated for observed external variables in blue and permuted external variables in red. An information loss value of 0 represents the unreduced dataset, and an information loss level of 100 represents the data being reduced to the average expression of all features.
 #' 
 #' @examples 
 #' #load CCA package for example dataset
@@ -45,11 +46,13 @@
 #' #OSCA_parPlot(df=par, externalVarName = "Diet", dataName = "Nutritional Issue Genes")
 #' 
 #' @references 
-#' Benjamini Y, Hochberg Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal statistical society: series B (Methodological) 57 (1995) 289–300.
+#' Benjamini Y, Hochberg Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. *Journal of the Royal statistical society: series B (Methodological)* **57** (1995) 289–300.
 #' 
-#' Martin P, et al. Novel aspects of PPARalpha-mediated regulation of lipid and xenobiotic metabolism revealed through a nutrigenomic study. Hepatology, in press, 2007.
+#' Martin P, et al. Novel aspects of PPARalpha-mediated regulation of lipid and xenobiotic metabolism revealed through a nutrigenomic study. *Hepatology*, in press, 2007.
 #' 
-#' Millstein J, Battaglin F, Barrett M, Cao S, Zhang W, Stintzing S, et al. Partition: a surjective mapping approach for dimensionality reduction. Bioinformatics 36 (2019) 676–681. doi:10.1093/bioinformatics/ btz661.
+#' Millstein J, Battaglin F, Barrett M, Cao S, Zhang W, Stintzing S, et al. Partition: a surjective mapping approach for dimensionality reduction. *Bioinformatics* **36** (2019) 676–681. doi:10.1093/bioinformatics/ btz661.
+#' 
+#' Queen K, Nguyen MN, Gilliland F, Chun S, Raby BA, Millstein J. ACDC: a general approach for detecting phenotype or exposure associated co-expression. (in press). *Frontiers in Medicine* (2023).
 #' 
 #' @seealso OSCA software - \url{https://yanglab.westlake.edu.cn/software/osca}
 #' 

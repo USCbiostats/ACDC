@@ -38,7 +38,9 @@ coVar(dataPair = c(1, 2),
 
 }
 \references{
-Martin P, et al. Novel aspects of PPARalpha-mediated regulation of lipid and xenobiotic metabolism revealed through a nutrigenomic study. Hepatology, in press, 2007.
+Martin P, et al. Novel aspects of PPARalpha-mediated regulation of lipid and xenobiotic metabolism revealed through a nutrigenomic study. \emph{Hepatology}, in press, 2007.
+
+Queen K, Nguyen MN, Gilliland F, Chun S, Raby BA, Millstein J. ACDC: a general approach for detecting phenotype or exposure associated co-expression. (in press). \emph{Frontiers in Medicine} (2023).
 }
 \author{
 Katelyn Queen, \email{kjqueen@usc.edu}
