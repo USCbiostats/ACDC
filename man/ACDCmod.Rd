@@ -50,20 +50,12 @@ library(CCA)
 # load dataset
 data("nutrimouse")
 
-# generate random phenotype
-r.pheno <- rnorm(nrow(nutrimouse$lipid))
-
 # partition dataset and save modules
 library(partition)
 part <- partition(nutrimouse$lipid, threshold = 0.50)
 mods <- part$mapping_key[which(grepl("reduced_var_", part$mapping_key$variable)), ]$mapping
 
-# run function for random phenotype
-ACDCmod(fullData = nutrimouse$lipid,
-        modules=mods,
-        externalVar = r.pheno)
-
-# run function for diet and genotype (non-random)
+# run function for diet and genotype
 ACDCmod(fullData = nutrimouse$lipid,
         modules = mods,
         externalVar = data.frame(diet=as.numeric(nutrimouse$diet), 

@@ -55,16 +55,7 @@ library(CCA)
 # load dataset
 data("nutrimouse")
 
-# generate random phenotype
-r.pheno <- rnorm(nrow(nutrimouse$lipid))
-
-# run function for random phenotype
-ACDChighdim(moduleIdentifier = 1,
-            moduleCols = list(1:ncol(nutrimouse$lipid)),
-            fullData = nutrimouse$lipid,
-            externalVar = r.pheno)
-
-# run function for diet and genotype (non-random)
+# run function for diet and genotype
 ACDChighdim(moduleIdentifier = 1,
             moduleCols = list(1:ncol(nutrimouse$lipid)),
             fullData = nutrimouse$lipid,

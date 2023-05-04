@@ -25,20 +25,12 @@
 #' # load dataset
 #' data("nutrimouse")
 #' 
-#' # generate random phenotype
-#' r.pheno <- rnorm(nrow(nutrimouse$lipid))
-#' 
 #' # partition dataset and save modules
 #' library(partition)
 #' part <- partition(nutrimouse$lipid, threshold = 0.50)
 #' mods <- part$mapping_key[which(grepl("reduced_var_", part$mapping_key$variable)), ]$mapping
 #' 
-#' # run function for random phenotype
-#' ACDCmod(fullData = nutrimouse$lipid,
-#'         modules=mods,
-#'         externalVar = r.pheno)
-#' 
-#' # run function for diet and genotype (non-random)
+#' # run function for diet and genotype
 #' ACDCmod(fullData = nutrimouse$lipid,
 #'         modules = mods,
 #'         externalVar = data.frame(diet=as.numeric(nutrimouse$diet), 
@@ -66,10 +58,10 @@
 #' @import CCP
 #' @import utils
 #' @import stats
-#' @import parallel
+#' @import tidyr
 #' @import foreach
 #' @import doParallel
-#' @import tidyr
+#' @import parallel
 ACDCmod <- function(fullData, modules, externalVar, identifierList=colnames(fullData), numNodes = 1) {
   
   # to remove "no visible binding" note
@@ -78,7 +70,7 @@ ACDCmod <- function(fullData, modules, externalVar, identifierList=colnames(full
   ## function to suppress output
   # use for p.asym
   hush = function(code){
-    sink("/dev/null")
+    sink(nullfile())
     tmp = code
     sink()
     return(tmp)
@@ -94,14 +86,12 @@ ACDCmod <- function(fullData, modules, externalVar, identifierList=colnames(full
   if(ncol(fullData) != length(identifierList)) stop("identifierList must be the same length as the number of columns in fullData.")
   if(length(modules) == 0) stop("No modules input.")
   
-  # parallel set up
-  my.cluster <- parallel::makeCluster(
-    numNodes, 
-    type = "PSOCK")
-  doParallel::registerDoParallel(cl = my.cluster)
-  
   # iteration counter
   i = 0
+  
+  # parallel set up
+  my.cluster <- parallel::makeCluster(numNodes)
+  doParallel::registerDoParallel(my.cluster)
   
   # for each module...
   results <- foreach (i = 1:length(modules),

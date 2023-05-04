@@ -31,16 +31,6 @@ library(CCA)
 # load dataset
 data("nutrimouse")
 
-# generate random phenotype
-r.pheno <- rnorm(nrow(nutrimouse$gene))
-
-## random phenotype
-# run function; input path to OSCA software
-# OSCA_singleValue(df = nutrimouse$gene, 
-#                  externalVar= r.pheno, 
-#                  oscaPath = "pathHere")
-
-## observed external variable
 # run function; input path to OSCA software
 # OSCA_singleValue(df = nutrimouse$gene, 
 #                  externalVar = as.numeric(nutrimouse$diet),

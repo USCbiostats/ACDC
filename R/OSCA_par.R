@@ -33,19 +33,6 @@
 #' # load dataset
 #' data("nutrimouse")
 #' 
-#' # generate random phenotype
-#' r.pheno <- rnorm(nrow(nutrimouse$gene))
-#' 
-#' ## random phenotype
-#' # run function; input path to OSCA software
-#' # OSCA_par(df = nutrimouse$gene, 
-#' #          externalVar = r.pheno, 
-#' #          ILCincrement = 0.25, 
-#' #          oscaPath = "pathHere", 
-#' #          numNodes = detectCores()-1, 
-#' #          permute = T)
-#' 
-#' ## observed external variable
 #' # run function; input path to OSCA software
 #' # OSCA_par(df = nutrimouse$gene, 
 #' #          externalVar = as.numeric(nutrimouse$diet),
@@ -70,9 +57,9 @@
 #' @export
 #' @import data.table
 #' @import partition
-#' @import parallel
 #' @import foreach
 #' @import doParallel
+#' @import parallel
 OSCA_par <- function(df, externalVar, ILCincrement = 0.05, oscaPath, numNodes = 1, permute = T) {
   
   # check correct dimensions of input
@@ -94,10 +81,8 @@ OSCA_par <- function(df, externalVar, ILCincrement = 0.05, oscaPath, numNodes = 
   externalVar_permute <- sample(externalVar)
   
   # parallel set up
-  my.cluster <- parallel::makeCluster(
-    numNodes, 
-    type = "PSOCK")
-  doParallel::registerDoParallel(cl = my.cluster)
+  my.cluster <- parallel::makeCluster(numNodes)
+  doParallel::registerDoParallel(my.cluster)
   
   # PVE for each value with permutations or PVE for each value without permutations
   if (permute == T) {

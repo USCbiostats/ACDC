@@ -54,6 +54,10 @@
 #' @import CCP
 #' @import utils
 #' @import stats
+#' @import tidyr
+#' @import foreach
+#' @import doParallel
+#' @import parallel
 ACDC <- function(fullData, ILC = 0.50, externalVar, identifierList = colnames(fullData), numNodes = 1) {
   
   # to remove "no visible binding" note
@@ -62,7 +66,7 @@ ACDC <- function(fullData, ILC = 0.50, externalVar, identifierList = colnames(fu
   ## function to suppress output
   # use for p.asym
   hush = function(code){
-    sink("/dev/null")
+    sink(nullfile())
     tmp = code
     sink()
     return(tmp)
@@ -78,6 +82,9 @@ ACDC <- function(fullData, ILC = 0.50, externalVar, identifierList = colnames(fu
   if(ncol(fullData) != length(identifierList)) stop("identifierList must be the same length as the number of columns in fullData.")
   if(0 > ILC | 1 < ILC) stop("ILC must be between 0 and 1.")
   
+  # iteration counter
+  i = 0
+  
   # partition and find modules
   part    <- partition(fullData, threshold = ILC)
   modules <- part$mapping_key[which(grepl("reduced_var_", part$mapping_key$variable)), ]$indices
@@ -86,13 +93,8 @@ ACDC <- function(fullData, ILC = 0.50, externalVar, identifierList = colnames(fu
   if(length(modules) == 0) stop("No modules identified. Try a smaller ILC.")
   
   # parallel set up
-  my.cluster <- parallel::makeCluster(
-    numNodes, 
-    type = "PSOCK")
-  doParallel::registerDoParallel(cl = my.cluster)
-  
-  # iteration counter
-  i = 0
+  my.cluster <- parallel::makeCluster(numNodes)
+  doParallel::registerDoParallel(my.cluster)
   
   # for each module...
   results <- foreach (i = 1:length(modules),
