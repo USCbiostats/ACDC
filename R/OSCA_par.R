@@ -33,13 +33,11 @@
 #' # load dataset
 #' data("nutrimouse")
 #' 
-#' # run function; input path to OSCA software
-#' # OSCA_par(df = nutrimouse$gene, 
-#' #          externalVar = as.numeric(nutrimouse$diet),
-#' #          ILCincrement = 0.25, 
-#' #          oscaPath = "pathHere", 
-#' #          numNodes = detectCores()-1, 
-#' #          permute = T)
+#' # run function; input absolute path to OSCA software before running
+#' \dontrun{OSCA_par(df = nutrimouse$gene, 
+#'           externalVar = as.numeric(nutrimouse$diet),
+#'           ILCincrement = 0.25, 
+#'           oscaPath = "pathHere")}
 #' 
 #' @references 
 #' Benjamini Y, Hochberg Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. *Journal of the Royal statistical society: series B (Methodological)* **57** (1995) 289–300.
@@ -60,7 +58,7 @@
 #' @import foreach
 #' @import doParallel
 #' @import parallel
-OSCA_par <- function(df, externalVar, ILCincrement = 0.05, oscaPath, numNodes = 1, permute = T) {
+OSCA_par <- function(df, externalVar, ILCincrement = 0.05, oscaPath, numNodes = 1, permute = TRUE) {
   
   # check correct dimensions of input
   if(nrow(df) != length(externalVar)) stop("fullData and externalVar must have the same number of rows.")

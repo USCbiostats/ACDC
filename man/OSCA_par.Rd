@@ -10,7 +10,7 @@ OSCA_par(
   ILCincrement = 0.05,
   oscaPath,
   numNodes = 1,
-  permute = T
+  permute = TRUE
 )
 }
 \arguments{
@@ -56,13 +56,11 @@ library(CCA)
 # load dataset
 data("nutrimouse")
 
-# run function; input path to OSCA software
-# OSCA_par(df = nutrimouse$gene, 
-#          externalVar = as.numeric(nutrimouse$diet),
-#          ILCincrement = 0.25, 
-#          oscaPath = "pathHere", 
-#          numNodes = detectCores()-1, 
-#          permute = T)
+# run function; input absolute path to OSCA software before running
+\dontrun{OSCA_par(df = nutrimouse$gene, 
+          externalVar = as.numeric(nutrimouse$diet),
+          ILCincrement = 0.25, 
+          oscaPath = "pathHere")}
 
 }
 \references{

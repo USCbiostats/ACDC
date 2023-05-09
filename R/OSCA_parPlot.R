@@ -18,16 +18,14 @@
 #' # load dataset
 #' data("nutrimouse")
 #' 
-#' # run OSCA_par and save output; input path to OSCA software
-#' # par <- OSCA_par(df = nutrimouse$gene, 
-#' #                 externalVar = as.numeric(nutrimouse$diet),
-#' #                 ILCincrement = 0.25,
-#' #                 oscaPath = "pathHere", 
-#' #                 numNodes = detectCores()-1, 
-#' #                 permute = T)
+#' # run OSCA_par and save output; input absolute path to OSCA software before running
+#' \dontrun{par <- OSCA_par(df = nutrimouse$gene, 
+#'                 externalVar = as.numeric(nutrimouse$diet),
+#'                  ILCincrement = 0.25,
+#'                  oscaPath = "pathHere")}
 #' 
 #' # run function
-#' #OSCA_parPlot(df=par, externalVarName = "Diet", dataName = "Nutritional Issue Genes")
+#' \dontrun{OSCA_parPlot(df=par, externalVarName = "Diet", dataName = "Nutritional Issue Genes")}
 #' 
 #' @references 
 #' Benjamini Y, Hochberg Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. *Journal of the Royal statistical society: series B (Methodological)* **57** (1995) 289–300.

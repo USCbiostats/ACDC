@@ -31,10 +31,10 @@ library(CCA)
 # load dataset
 data("nutrimouse")
 
-# run function; input path to OSCA software
-# OSCA_singleValue(df = nutrimouse$gene, 
-#                  externalVar = as.numeric(nutrimouse$diet),
-#                  oscaPath = "pathHere")
+# run function; input absolute path to OSCA software before running
+\dontrun{OSCA_singleValue(df = nutrimouse$gene, 
+                  externalVar = as.numeric(nutrimouse$diet),
+                  oscaPath = "pathHere")}
 
 }
 \references{
