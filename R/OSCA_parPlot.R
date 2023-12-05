@@ -56,6 +56,7 @@ OSCA_parPlot <- function(df, externalVarName = "", dataName = "") {
                                color = "Observed")) +
            geom_point(aes(x = InformationLost, y = VarianceExplained_Permuted, color="Permuted"), size=2) +
            geom_line(aes(x = InformationLost, y = VarianceExplained_Permuted, color="Permuted"), size=0.75) +
+           ylim(c(0,1)) + 
            xlab("Information Lost") +
            ylab("Percent Variance Explained") +
            ggtitle(paste0("Percent Variance Explained in ", 
