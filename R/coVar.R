@@ -33,12 +33,5 @@
 #' 
 #' @export
 coVar <- function(dataPair, fullData) {
-  
-  # helper function to calculate covariance
-  coVar_calc <- function(x) {
-    return((x[dataPair[1]]-mean(fullData[,dataPair[1]]))*(x[dataPair[2]]-mean(fullData[,dataPair[2]])))
-  }
-  
-  # calculate dataPair covariance for each sample (row) in fullData 
-  return(as.numeric(apply(fullData, MARGIN = 1, FUN = coVar_calc)))
+  (fullData[,dataPair[1]] - mean(fullData[,dataPair[1]])) * (fullData[,dataPair[2]] - mean(fullData[,dataPair[2]]))
 }
