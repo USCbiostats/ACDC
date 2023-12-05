@@ -90,7 +90,8 @@ ACDCmod <- function(fullData, modules, externalVar, identifierList=colnames(full
   i = 0
   
   # parallel set up
-  my.cluster <- parallel::makeCluster(numNodes)
+  numNodes   <- min(numNodes, length(modules))
+  my.cluster <- parallel::makeCluster(numNodes, outfile = "")
   doParallel::registerDoParallel(my.cluster)
   
   # for each module...

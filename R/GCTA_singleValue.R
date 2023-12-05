@@ -32,11 +32,6 @@
 #' @import data.table 
 #' @import utils
 #' @import genio
-#' ## Function to calculate heritability for complex trait
-# @param fileLoc absolute file path to bed, bim, and fam files, including prefix
-# @param externalVar vector of length n of external variable values with no ID column; must be in the same sample order as bed, bim, fam files
-# @param gctaPath absolute path to GCTA software
-# @return Row of GREML output containing percent variance explained in external data and standard error
 GCTA_singleValue <- function(fileLoc, externalVar, gctaPath) {
   
   ## 1. save out external data in temporary file

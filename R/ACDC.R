@@ -86,14 +86,19 @@ ACDC <- function(fullData, ILC = 0.50, externalVar, identifierList = colnames(fu
   i = 0
   
   # partition and find modules
-  part    <- partition(fullData, threshold = ILC)
+  if(dim(fullData)[[2]] > 4000) {
+    part <- superPartition(fullData, threshold = ILC)
+  } else {
+    part <- partition(fullData, threshold = ILC)
+  }
   modules <- part$mapping_key[which(grepl("reduced_var_", part$mapping_key$variable)), ]$indices
   
   # stop if no modules identified
   if(length(modules) == 0) stop("No modules identified. Try a smaller ILC.")
   
   # parallel set up
-  my.cluster <- parallel::makeCluster(numNodes)
+  numNodes   <- min(numNodes, length(modules))
+  my.cluster <- parallel::makeCluster(numNodes, outfile = "")
   doParallel::registerDoParallel(my.cluster)
   
   # for each module...

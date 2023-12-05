@@ -1,6 +1,6 @@
 Package: modACDC
 Title: Association of Covariance for Detecting Differential Co-Expression
-Version: 1.0.0
+Version: 1.1.0
 Authors@R: 
     c(person(given = "Katelyn", 
 		family = "Queen", 
@@ -22,14 +22,16 @@ Imports:
     CCA,
     CCP,
     data.table,
+    doParallel,
     foreach,
+    genieclust,
     ggplot2,
     partition,
-    doParallel,
     parallel,
-    utils,
+    progress,
     stats,
-    tidyr
+    tidyr,
+    utils
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
