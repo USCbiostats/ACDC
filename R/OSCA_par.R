@@ -79,8 +79,12 @@ OSCA_par <- function(df, externalVar, ILCincrement = 0.05, oscaPath, numNodes = 
   externalVar_permute <- sample(externalVar)
   
   # parallel set up
-  my.cluster <- parallel::makeCluster(numNodes)
+  numNodes   <- min(numNodes, length(ILClist)) # ensure no more workers than jobs
+  my.cluster <- parallel::makeCluster(numNodes, outfile = "") # print messages to console
   doParallel::registerDoParallel(my.cluster)
+  
+  message("Starting analysis.")
+  if(dim(df)[[2]] > 4000) message("Using superPartition due to more than 4,000 features.")
   
   # PVE for each value with permutations or PVE for each value without permutations
   if (permute == T) {
@@ -93,7 +97,11 @@ OSCA_par <- function(df, externalVar, ILCincrement = 0.05, oscaPath, numNodes = 
                           tmp <- c(ILClist[i])
                           
                           # partition for given ILC; save out information lost and percent reduction
-                          prt    <- partition(df, threshold = ILClist[i])
+                          if(dim(df)[[2]] > 4000) {
+                            prt <- superPartition(df, threshold = ILClist[i])
+                          } else {
+                            prt <- partition(df, threshold = ILClist[i])
+                          }
                           tmp[2] <- round(total.info.lost(prt$mapping_key), 3) #infoLost
                           tmp[3] <- round((1 - ncol(prt$reduced_data)/dim(df)[[2]])*100, 3) #percRed
                           
@@ -111,6 +119,7 @@ OSCA_par <- function(df, externalVar, ILCincrement = 0.05, oscaPath, numNodes = 
                           tmp[6] <- per[,2] #PVE_per
                           tmp[7] <- per[,3] #SE_per
                           
+                          message(paste0("ILC = ", ILClist[i], " complete."))
                           return(tmp)
                         }
     
@@ -130,7 +139,11 @@ OSCA_par <- function(df, externalVar, ILCincrement = 0.05, oscaPath, numNodes = 
                           tmp <- c(ILClist[i])
                           
                           # partition for given ILC; save out information lost and percent reduction
-                          prt    <- partition(df, threshold = ILClist[i])
+                          if(dim(df)[[2]] > 4000) {
+                            prt <- superPartition(df, threshold = ILClist[i])
+                          } else {
+                            prt <- partition(df, threshold = ILClist[i])
+                          }
                           tmp[2] <- round(total.info.lost(prt$mapping_key), 3) #infoLost
                           tmp[3] <- round((1 - ncol(prt$reduced_data)/dim(df)[[2]])*100, 3) #percRed
                           
@@ -141,6 +154,7 @@ OSCA_par <- function(df, externalVar, ILCincrement = 0.05, oscaPath, numNodes = 
                           tmp[4] <- obs[,2] #PVE_obs
                           tmp[5] <- obs[,3] #SE_obs
                           
+                          message(paste0("ILC = ", ILClist[i], " complete."))
                           return(tmp)
                         }
     
