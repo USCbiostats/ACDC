@@ -47,12 +47,19 @@ OSCA_parPlot <- function(df, externalVarName = "", dataName = "") {
   # to remove "no visible binding" note
   InformationLost <- SE_Observed <- VarianceExplained_Observed <- VarianceExplained_Permuted <- NULL
   
+  # create confidence bounds
+  i = 0
+  for (i in 1:nrow(df)) {
+    df$VEObs_upper[i] <- min(1, (df$VarianceExplained_Observed[i] + df$SE_Observed[i]))
+    df$VEObs_lower[i] <- max(0, (df$VarianceExplained_Observed[i] - df$SE_Observed[i]))
+  }
+  
   # create and return graph
   return(ggplot(data=df) +
            geom_line(aes(x = InformationLost, y = VarianceExplained_Observed, color="Observed"), size=0.75) +
            geom_pointrange(aes(x = InformationLost, y = VarianceExplained_Observed,
-                               ymin = VarianceExplained_Observed-SE_Observed, 
-                               ymax = VarianceExplained_Observed+SE_Observed,
+                               ymin = VEObs_lower, 
+                               ymax = VEObs_upper,
                                color = "Observed")) +
            geom_point(aes(x = InformationLost, y = VarianceExplained_Permuted, color="Permuted"), size=2) +
            geom_line(aes(x = InformationLost, y = VarianceExplained_Permuted, color="Permuted"), size=0.75) +
@@ -63,7 +70,7 @@ OSCA_parPlot <- function(df, externalVarName = "", dataName = "") {
                           externalVarName, "\n by ", dataName)) +
            scale_x_continuous(breaks = seq(0, 100, by=25),
                               sec.axis = sec_axis(~ .,
-                                                  labels = round(df$PercentReduction,0),
+                                                  labels = round(df$PercentReduction, 0),
                                                   breaks = df$InformationLost,
                                                   name = "Percent Reduction")) +
            scale_color_manual(name = externalVarName,
