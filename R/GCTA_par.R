@@ -86,7 +86,7 @@ GCTA_par <- function(df, ILCincrement = 0.05, fileLoc, gctaPath, summaryType, pe
   # for each ILC value
   results <- foreach (i = 1:length(ILClist),
                       .combine = rbind,
-                      .packages = c("partition", "data.table", "genio"),
+                      .packages = c("partition", "data.table", "genieclust", "genio"),
                       .export = c("GCTA_singleValue")) %dopar% {
                         # vector to store results
                         tmp <- c(ILClist[i])
@@ -230,17 +230,26 @@ GCTA_par <- function(df, ILCincrement = 0.05, fileLoc, gctaPath, summaryType, pe
                       }
   
   # column names for results df
-  results <- as.data.frame(results)
+  results <- data.frame(results)
   if(permute == TRUE) {
     colnames(results) <- c("ILC", "InformationLost", "PercentReduction", 
                            "AveVarianceExplained_Observed", "AveSE_Observed", "VarianceExplained_Observed",
                            "SE_Observed", "AveVarianceExplained_Permuted", "AveSE_Permuted",
                            "VarianceExplained_Permuted", "SE_Permuted")
+    results$AveVarianceExplained_Permuted <- as.numeric(results$AveVarianceExplained_Permuted)
+    results$AveSE_Permuted                <- as.numeric(results$AveSE_Permuted)
   } else {
     colnames(results) <- c("ILC", "InformationLost", "PercentReduction", 
                            "AveVarianceExplained_Observed", "AveSE_Observed", "VarianceExplained_Observed",
                            "SE_Observed")
   }
   
+  # fix data types
+  results                               <- data.frame(results)
+  results$ILC                           <- as.numeric(results$ILC)
+  results$InformationLost               <- as.numeric(results$InformationLost)
+  results$PercentReduction              <- as.numeric(results$PercentReduction)
+  results$AveVarianceExplained_Observed <- as.numeric(results$AveVarianceExplained_Observed)
+  results$AveSE_Observed                <- as.numeric(results$AveSE_Observed)
   return(results)
 }
