@@ -27,7 +27,7 @@ ACDChighdim(
 \item{corrThreshold}{minimum correlation required between two features to be kept in the dataset; 0 \eqn{\leq} corrThreshold \eqn{\leq} 1; default value is 0.75}
 }
 \value{
-Data frame, designed to be row binded with output from other ACDC functions after removing the final column, with columns
+Tibble, designed to be row binded with output from other ACDC functions after removing the final column, with columns
 
 \describe{
 \item{moduleNum}{module identifier}

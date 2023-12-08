@@ -7,7 +7,7 @@
 #' @param externalVar data frame, matrix, or vector containing external variable data to be used for CCA, rows are samples; all elements must be numeric
 #' @param identifierList optional row vector of identifiers, of the same length and order, corresponding to columns in fullData (ex: HUGO symbols for genes); default value is the column names from fullData
 #' @param numNodes number of available compute nodes for parallelization; default is 1
-#' @return Data frame, sorted by ascending BH FDR value, with columns 
+#' @return Tibble, sorted by ascending BH FDR value, with columns 
 #' 
 #' \describe{
 #' \item{moduleNum}{module identifier}
@@ -151,7 +151,7 @@ ACDC <- function(fullData, ILC = 0.50, externalVar, identifierList = colnames(fu
   parallel::stopCluster(cl = my.cluster)
   
   # column names for results df
-  results           <- as.data.frame(results)
+  results           <- tibble(results)
   colnames(results) <- c("moduleNum", "colNames", "features", "CCA_corr", "CCA_pval")
   
   # unnest columns that don't need to be lists

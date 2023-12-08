@@ -24,7 +24,7 @@ ACDCmod(
 \item{numNodes}{number of available compute nodes for parallelization; default is 1}
 }
 \value{
-Data frame, sorted by ascending BH FDR value, with columns
+Tibble, sorted by ascending BH FDR value, with columns
 
 \describe{
 \item{moduleNum}{module identifier}

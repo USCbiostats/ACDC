@@ -30,6 +30,7 @@ Imports:
     parallel,
     progress,
     stats,
+    tibble,
     tidyr,
     utils
 Encoding: UTF-8

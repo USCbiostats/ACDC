@@ -27,7 +27,7 @@ OSCA_par(
 \item{permute}{boolean value for whether or not to calculate values for a random permutation of the external variable; default is true}
 }
 \value{
-Data frame with columns
+Tibble with columns
 
 \describe{
 \item{ILC}{the information loss criterion used for that iteration}

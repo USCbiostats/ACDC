@@ -8,7 +8,7 @@
 #' @param externalVar data frame, matrix, or vector containing external variable data to be used for CCA, rows are samples; all elements must be numeric
 #' @param identifierList optional row vector of identifiers, of the same length and order, corresponding to columns in fullData (ex: HUGO symbols for genes); default value is the column names from fullData
 #' @param corrThreshold minimum correlation required between two features to be kept in the dataset; 0 \eqn{\leq} corrThreshold \eqn{\leq} 1; default value is 0.75
-#' @return Data frame, designed to be row binded with output from other ACDC functions after removing the final column, with columns 
+#' @return Tibble, designed to be row binded with output from other ACDC functions after removing the final column, with columns 
 #' 
 #' \describe{
 #' \item{moduleNum}{module identifier}
@@ -153,7 +153,7 @@ ACDChighdim <- function(moduleIdentifier = 1, moduleCols, fullData, externalVar,
   tmp[6] <- nrow(colpairs)
   
   # return same output that will rowbind with ACDC output
-  results <- as.data.frame(t(tmp))
+  results <- tibble(t(tmp))
   colnames(results) <- c("moduleNum", "colNames", "features", "CCA_corr", "CCA_pval", "numPairsUsed")
   
   # unnest columns that don't need to be lists

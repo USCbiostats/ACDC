@@ -8,7 +8,7 @@
 #' @param oscaPath absolute path to OSCA software
 #' @param numNodes number of available compute nodes for parallelization; default is 1
 #' @param permute boolean value for whether or not to calculate values for a random permutation of the external variable; default is true
-#' @return Data frame with columns
+#' @return Tibble with columns
 #' 
 #' \describe{
 #' \item{ILC}{the information loss criterion used for that iteration}
@@ -58,6 +58,7 @@
 #' @import foreach
 #' @import doParallel
 #' @import parallel
+#' @import tibble
 OSCA_par <- function(df, externalVar, ILCincrement = 0.05, oscaPath, numNodes = 1, permute = TRUE) {
   
   # check correct dimensions of input
@@ -98,7 +99,7 @@ OSCA_par <- function(df, externalVar, ILCincrement = 0.05, oscaPath, numNodes = 
                           
                           # partition for given ILC; save out information lost and percent reduction
                           if(dim(df)[[2]] > 4000) {
-                            prt <- superPartition(df, threshold = ILClist[i])
+                            prt <- super_partition(df, threshold = ILClist[i])
                           } else {
                             prt <- partition(df, threshold = ILClist[i])
                           }
@@ -140,7 +141,7 @@ OSCA_par <- function(df, externalVar, ILCincrement = 0.05, oscaPath, numNodes = 
                           
                           # partition for given ILC; save out information lost and percent reduction
                           if(dim(df)[[2]] > 4000) {
-                            prt <- superPartition(df, threshold = ILClist[i])
+                            prt <- super_partition(df, threshold = ILClist[i])
                           } else {
                             prt <- partition(df, threshold = ILClist[i])
                           }
@@ -162,7 +163,7 @@ OSCA_par <- function(df, externalVar, ILCincrement = 0.05, oscaPath, numNodes = 
     parallel::stopCluster(cl = my.cluster)
     
     # column names for results df
-    results           <- as.data.frame(results)
+    results           <- tibble(results)
     colnames(results) <- c("ILC", "InformationLost", "PercentReduction", "VarianceExplained_Observed", "SE_Observed")
   }
   

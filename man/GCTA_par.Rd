@@ -30,7 +30,7 @@ GCTA_par(
 \item{numNodes}{number of available compute nodes for parallelization; default is 1}
 }
 \value{
-Data frame with columns
+Tibble with columns
 \describe{
 \item{ILC}{the information loss criterion used for that iteration}
 \item{InformationLost}{percent information lost due to data reduction}
