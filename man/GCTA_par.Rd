@@ -11,7 +11,9 @@ GCTA_par(
   gctaPath,
   summaryType,
   permute = TRUE,
-  numNodes = 1
+  numNodes = 1,
+  numCovars = NULL,
+  catCovars = NULL
 )
 }
 \arguments{
@@ -28,6 +30,10 @@ GCTA_par(
 \item{permute}{boolean value for whether or not to calculate values for a random permutation module summary; default is true}
 
 \item{numNodes}{number of available compute nodes for parallelization; default is 1}
+
+\item{numCovars}{n x c_n matrix of numerical covariates to adjust heritability model for; must be in same person order as fam file; default is NULL}
+
+\item{catCovars}{n x c_c matrix of categorical covariates to adjust heritability model for; must be in same person order as fam file; default is NULL}
 }
 \value{
 Tibble with columns

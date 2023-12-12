@@ -4,7 +4,13 @@
 \alias{GCTA_singleValue}
 \title{GCTA_singleValue}
 \usage{
-GCTA_singleValue(fileLoc, externalVar, gctaPath)
+GCTA_singleValue(
+  fileLoc,
+  externalVar,
+  gctaPath,
+  numCovars = NULL,
+  catCovars = NULL
+)
 }
 \arguments{
 \item{fileLoc}{absolute file path to bed, bim, and fam files, including prefix}
@@ -12,6 +18,10 @@ GCTA_singleValue(fileLoc, externalVar, gctaPath)
 \item{externalVar}{vector of length n of external variable values with no ID column; must be in the same sample order as bed, bim, fam files}
 
 \item{gctaPath}{absolute path to GCTA software}
+
+\item{numCovars}{n x c_n matrix of numerical covariates to adjust heritability model for; must be in same person order as fam file; default is NULL}
+
+\item{catCovars}{n x c_c matrix of categorical covariates to adjust heritability model for; must be in same person order as fam file; default is NULL}
 }
 \value{
 Row of GREML output containing heritability point estimate of external data and standard error

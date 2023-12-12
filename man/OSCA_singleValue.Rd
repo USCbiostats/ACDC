@@ -4,7 +4,7 @@
 \alias{OSCA_singleValue}
 \title{OSCA_singleValue}
 \usage{
-OSCA_singleValue(df, externalVar, oscaPath)
+OSCA_singleValue(df, externalVar, oscaPath, numCovars = NULL, catCovars = NULL)
 }
 \arguments{
 \item{df}{n x p dataframe or matrix of numeric -omics values with no ID column}
@@ -12,6 +12,10 @@ OSCA_singleValue(df, externalVar, oscaPath)
 \item{externalVar}{vector of length n of external variable values with no ID column}
 
 \item{oscaPath}{absolute path to OSCA software}
+
+\item{numCovars}{n x c_n matrix of numerical covariates to adjust heritability model for; must be in same person order as fam file; default is NULL}
+
+\item{catCovars}{n x c_c matrix of categorical covariates to adjust heritability model for; must be in same person order as fam file; default is NULL}
 }
 \value{
 Row of OREML output containing percent variance explained in external data and standard error

@@ -5,6 +5,8 @@
 #' @param fileLoc absolute file path to bed, bim, and fam files, including prefix
 #' @param externalVar vector of length n of external variable values with no ID column; must be in the same sample order as bed, bim, fam files
 #' @param gctaPath absolute path to GCTA software
+#' @param numCovars n x c_n matrix of numerical covariates to adjust heritability model for; must be in same person order as fam file; default is NULL
+#' @param catCovars n x c_c matrix of categorical covariates to adjust heritability model for; must be in same person order as fam file; default is NULL
 #' @return Row of GREML output containing heritability point estimate of external data and standard error
 #' 
 #' @details Genome-wide Complex Trait Analysis (GCTA) is a suite of C++ functions. In order to use the GCTA functions, the user must specify the absolute path to the GCTA software, which can be downloaded from the Yang Lab website [here](https://yanglab.westlake.edu.cn/software/gcta/#Download).
@@ -32,7 +34,11 @@
 #' @import data.table 
 #' @import utils
 #' @import genio
-GCTA_singleValue <- function(fileLoc, externalVar, gctaPath) {
+GCTA_singleValue <- function(fileLoc, 
+                             externalVar, 
+                             gctaPath, 
+                             numCovars = NULL, 
+                             catCovars = NULL) {
   
   ## 1. save out external data in temporary file
   # read in fam file
@@ -45,20 +51,56 @@ GCTA_singleValue <- function(fileLoc, externalVar, gctaPath) {
   phf <- tempfile(pattern = "GCTA", fileext = ".txt")
   write.table(evar_file, phf, row.names = F, quote = F)
   
-  ## 2. run GREML
+  ## 2. save out covariate data in temporary files
+  # numerical covariates
+  if(!is.null(numCovars)) {
+    numCovars <- cbind(fam.file$fam, fam.file$id, numCovars)
+    ncf       <- tempfile(pattern = "GCTA", fileext = ".txt")
+    write.table(numCovars, ncf, row.names = F, quote = F)
+  }
+  
+  # categorical covariates
+  if(!is.null(catCovars)) {
+    catCovars <- cbind(fam.file$fam, fam.file$id, catCovars)
+    ccf       <- tempfile(pattern = "GCTA", fileext = ".txt")
+    write.table(catCovars, ccf, row.names = F, quote = F)
+  }
+  
+  ## 3. run GREML
   # create GRM
   GRM <- tempfile(pattern = "GCTA", fileext = ".txt")
-  invisible(system(paste0(gctaPath, "/gcta-1.94.1 --bfile ", fileLoc, " --autosome --maf 0.1 --make-grm --out ", GRM),
+  invisible(system(paste0(gctaPath, "/gcta-1.94.1 --bfile ", fileLoc, 
+                          " --autosome --maf 0.1 --make-grm --out ", GRM),
                    intern=T))
   
   # estimate heritability
   herit <- tempfile(pattern = "GCTA", fileext = ".txt")
-  invisible(system(paste0(gctaPath, "/gcta-1.94.1 --grm ", GRM, " --pheno ", phf, " --reml --out ", herit), intern=T))
+  if(!is.null(catCovars) & !is.null(numCovars)) {
+    # include both numeric and categorical covariates
+    invisible(system(paste0(gctaPath, "/gcta-1.94.1 --grm ", GRM, " --pheno ", phf, 
+                            " --covar ", ccf, " --qcovar ", ncf, " --reml --out ", herit),
+                     intern=T))
+  } else if(!is.null(catCovars)) {
+    # include only categorical covariates
+    invisible(system(paste0(gctaPath, "/gcta-1.94.1 --grm ", GRM, " --pheno ", phf, 
+                            " --covar ", ccf, " --reml --out ", herit),
+                     intern=T))
+  } else if(!is.null(numCovars)) {
+    # include only numeric covariates
+    invisible(system(paste0(gctaPath, "/gcta-1.94.1 --grm ", GRM, " --pheno ", phf, 
+                            " --qcovar ", ncf, " --reml --out ", herit),
+                     intern=T))
+  } else {
+    # no covariates
+    invisible(system(paste0(gctaPath, "/gcta-1.94.1 --grm ", GRM, " --pheno ", phf, 
+                            " --reml --out ", herit),
+                     intern=T))
+  }
   
-  ## 3. save out GREML results
+  ## 4. save out GREML results
   data <- as.data.frame(read.csv(paste0(herit,".hsq"), sep="\t"))
   
-  ## 4. delete temporary files and return results
+  ## 5. delete temporary files and return results
   tmp_dir <- tempdir()
   file.remove(list.files(tmp_dir, full.names = T, pattern = "GCTA"))
   return(data[data$Source == "V(G)/Vp",])

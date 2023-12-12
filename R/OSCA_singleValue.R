@@ -5,6 +5,9 @@
 #' @param df n x p dataframe or matrix of numeric -omics values with no ID column
 #' @param externalVar vector of length n of external variable values with no ID column
 #' @param oscaPath absolute path to OSCA software
+#' @param numCovars n x c_n matrix of numerical covariates to adjust heritability model for; must be in same person order as fam file; default is NULL
+#' @param catCovars n x c_c matrix of categorical covariates to adjust heritability model for; must be in same person order as fam file; default is NULL
+#' 
 #' @return Row of OREML output containing percent variance explained in external data and standard error
 #' 
 #' @details OmicS-data-based Complex trait Analysis (OSCA) is a suite of C++ functions. In order to use the OSCA functions, the user must specify the absolute path to the OSCA software, which can be downloaded from the Yang Lab website [here](https://yanglab.westlake.edu.cn/software/osca/#Download).
@@ -39,7 +42,11 @@
 #' @export
 #' @import data.table 
 #' @import utils
-OSCA_singleValue <- function(df, externalVar, oscaPath) {
+OSCA_singleValue <- function(df, 
+                             externalVar, 
+                             oscaPath,
+                             numCovars = NULL,
+                             catCovars = NULL) {
   
   # check correct dimensions of input
   if(nrow(df) != length(externalVar)) stop("fullData and externalVar must have the same number of rows.")
@@ -61,6 +68,20 @@ OSCA_singleValue <- function(df, externalVar, oscaPath) {
   phf <- tempfile(pattern = "OSCA", fileext = ".txt")
   write.table(evar_file, phf, row.names = F)
   
+  # numerical covariates
+  if(!is.null(numCovars)) {
+    numCovars <- cbind(df$IID, df$IID, numCovars)
+    ncf       <- tempfile(pattern = "OSCA", fileext = ".txt")
+    write.table(numCovars, ncf, row.names = F, quote = F)
+  }
+  
+  # categorical covariates
+  if(!is.null(catCovars)) {
+    catCovars <- cbind(df$IID, df$IID, catCovars)
+    ccf       <- tempfile(pattern = "OSCA", fileext = ".txt")
+    write.table(catCovars, ccf, row.names = F, quote = F)
+  }
+  
   ## 2. run OSCA
   # create BOD files
   bodFile <- tempfile(pattern = "OSCA", fileext = ".txt")
@@ -72,7 +93,27 @@ OSCA_singleValue <- function(df, externalVar, oscaPath) {
   
   # run OREML
   OREML <- tempfile(pattern = "OSCA", fileext = ".txt")
-  invisible(system(paste0(oscaPath, " osca --reml --orm ", ormFile, " --pheno ", phf, " --no-fid --out ", OREML), intern=T))
+  if(!is.null(catCovars) & !is.null(numCovars)) {
+    # include both numeric and categorical covariates
+    invisible(system(paste0(oscaPath, " osca --reml --orm ", ormFile, " --pheno ", phf, 
+                            " --qcovar ", ncf, " --covar ", ccf," --no-fid --out ", OREML),
+                     intern=T))
+  } else if(!is.null(catCovars)) {
+    # include only categorical covariates
+    invisible(system(paste0(oscaPath, " osca --reml --orm ", ormFile, " --pheno ", phf, 
+                            " --covar ", ccf, " --no-fid --out ", OREML),
+                     intern=T))
+  } else if(!is.null(numCovars)) {
+    # include only numeric covariates
+    invisible(system(paste0(oscaPath, " osca --reml --orm ", ormFile, " --pheno ", phf, 
+                            " --qcovar ", ncf, " --no-fid --out ", OREML),
+                     intern=T))
+  } else {
+    # no covariates
+    invisible(system(paste0(oscaPath, " osca --reml --orm ", ormFile, " --pheno ", phf, 
+                            " --no-fid --out ", OREML), 
+                     intern=T))
+  }
   
   ## 3. save out OREML results
   data <- as.data.frame(read.csv(paste0(OREML,".rsq"), sep="\t"))

@@ -10,7 +10,9 @@ OSCA_par(
   ILCincrement = 0.05,
   oscaPath,
   numNodes = 1,
-  permute = TRUE
+  permute = TRUE,
+  numCovars = NULL,
+  catCovars = NULL
 )
 }
 \arguments{
@@ -25,6 +27,10 @@ OSCA_par(
 \item{numNodes}{number of available compute nodes for parallelization; default is 1}
 
 \item{permute}{boolean value for whether or not to calculate values for a random permutation of the external variable; default is true}
+
+\item{numCovars}{n x c_n matrix of numerical covariates to adjust heritability model for; must be in same person order as externalVar; default is NULL}
+
+\item{catCovars}{n x c_c matrix of categorical covariates to adjust heritability model for; must be in same person order as externalVar; default is NULL}
 }
 \value{
 Tibble with columns

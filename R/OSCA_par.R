@@ -8,6 +8,9 @@
 #' @param oscaPath absolute path to OSCA software
 #' @param numNodes number of available compute nodes for parallelization; default is 1
 #' @param permute boolean value for whether or not to calculate values for a random permutation of the external variable; default is true
+#' @param numCovars n x c_n matrix of numerical covariates to adjust heritability model for; must be in same person order as externalVar; default is NULL
+#' @param catCovars n x c_c matrix of categorical covariates to adjust heritability model for; must be in same person order as externalVar; default is NULL
+#' 
 #' @return Tibble with columns
 #' 
 #' \describe{
@@ -59,7 +62,14 @@
 #' @import doParallel
 #' @import parallel
 #' @import tibble
-OSCA_par <- function(df, externalVar, ILCincrement = 0.05, oscaPath, numNodes = 1, permute = TRUE) {
+OSCA_par <- function(df, 
+                     externalVar, 
+                     ILCincrement = 0.05, 
+                     oscaPath, 
+                     numNodes = 1, 
+                     permute = TRUE,
+                     numCovars = NULL,
+                     catCovars = NULL) {
   
   # check correct dimensions of input
   if(nrow(df) != length(externalVar)) stop("fullData and externalVar must have the same number of rows.")
@@ -109,14 +119,18 @@ OSCA_par <- function(df, externalVar, ILCincrement = 0.05, oscaPath, numNodes = 
                           # calculate PVE for observed phenotype
                           obs    <- OSCA_singleValue(df = prt$reduced_data,
                                                      externalVar = externalVar,
-                                                     oscaPath = oscaPath)
+                                                     oscaPath = oscaPath,
+                                                     catCovars = catCovars,
+                                                     numCovars = numCovars)
                           tmp[4] <- obs[,2] #PVE_obs
                           tmp[5] <- obs[,3] #SE_obs
                           
                           # calculate PVE for permuted phenotype
                           per <- OSCA_singleValue(df = prt$reduced_data,
                                                   externalVar = externalVar_permute,
-                                                  oscaPath = oscaPath)
+                                                  oscaPath = oscaPath,
+                                                  catCovars = catCovars,
+                                                  numCovars = numCovars)
                           tmp[6] <- per[,2] #PVE_per
                           tmp[7] <- per[,3] #SE_per
                           
@@ -151,7 +165,9 @@ OSCA_par <- function(df, externalVar, ILCincrement = 0.05, oscaPath, numNodes = 
                           # calculate PVE for observed phenotype
                           obs    <- OSCA_singleValue(df = prt$reduced_data,
                                                      externalVar = externalVar,
-                                                     oscaPath = oscaPath)
+                                                     oscaPath = oscaPath,
+                                                     catCovars = catCovars,
+                                                     numCovars = numCovars)
                           tmp[4] <- obs[,2] #PVE_obs
                           tmp[5] <- obs[,3] #SE_obs
                           
