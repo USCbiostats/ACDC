@@ -104,95 +104,59 @@ OSCA_par <- function(df,
   message("Starting analysis.")
   if(dim(df)[[2]] > 4000) message("Using superPartition due to more than 4,000 features.")
   
-  # PVE for each value with permutations or PVE for each value without permutations
-  if (permute == T) {
-    # for each ILC value
-    results <- foreach (i = 1:length(ILClist),
-                        .combine = rbind,
-                        .packages = c("partition", "data.table"),
-                        .export = c("OSCA_singleValue")) %dopar% {
-                          # vector to store results
-                          tmp <- c(ILClist[i])
-                          
-                          # partition for given ILC; save out information lost and percent reduction
-                          if(dim(df)[[2]] > 4000) {
-                            prt <- super_partition(df, threshold = ILClist[i])
-                          } else {
-                            prt <- partition(df, threshold = ILClist[i])
-                          }
-                          tmp[2] <- round(total.info.lost(prt$mapping_key), 3) #infoLost
-                          tmp[3] <- round((1 - ncol(prt$reduced_data)/dim(df)[[2]])*100, 3) #percRed
-                          
-                          # calculate PVE for observed phenotype
-                          obs    <- OSCA_singleValue(df = prt$reduced_data,
-                                                     externalVar = externalVar,
-                                                     oscaPath = oscaPath,
-                                                     remlAlg = remlAlg,
-                                                     maxRemlIt = maxRemlIt,
-                                                     catCovars = catCovars,
-                                                     numCovars = numCovars)
-                          tmp[4] <- obs[,2] #PVE_obs
-                          tmp[5] <- obs[,3] #SE_obs
-                          
-                          # calculate PVE for permuted phenotype
-                          per <- OSCA_singleValue(df = prt$reduced_data,
-                                                  externalVar = externalVar_permute,
-                                                  oscaPath = oscaPath,
-                                                  remlAlg = remlAlg,
-                                                  maxRemlIt = maxRemlIt,
-                                                  catCovars = catCovars,
-                                                  numCovars = numCovars)
-                          tmp[6] <- per[,2] #PVE_per
-                          tmp[7] <- per[,3] #SE_per
-                          
-                          message(paste0("ILC = ", ILClist[i], " complete."))
-                          return(tmp)
-                        }
+  # for each ILC value
+  results <- foreach (i = 1:length(ILClist),
+                      .combine = rbind,
+                      .packages = c("partition", "data.table"),
+                      .export = c("OSCA_singleValue")) %dopar% {
+    # vector to store results
+    tmp <- c(ILClist[i])
     
-    # close connection
-    parallel::stopCluster(cl = my.cluster)
+    # partition for given ILC; save out information lost and percent reduction
+    if(dim(df)[[2]] > 4000) {
+      prt <- super_partition(df, threshold = ILClist[i])
+    } else {
+      prt <- partition(df, threshold = ILClist[i])
+    }
+    tmp[2] <- round(total.info.lost(prt$mapping_key), 3) #infoLost
+    tmp[3] <- round((1 - ncol(prt$reduced_data)/dim(df)[[2]])*100, 3) #percRed
     
-    # column names for results df
-    results           <- as.data.frame(results)
+    # calculate PVE for observed phenotype
+    obs    <- OSCA_singleValue(df = prt$reduced_data,
+                               externalVar = externalVar,
+                               oscaPath = oscaPath,
+                               remlAlg = remlAlg,
+                               maxRemlIt = maxRemlIt,
+                               catCovars = catCovars,
+                               numCovars = numCovars)
+    tmp[4] <- obs[,2] #PVE_obs
+    tmp[5] <- obs[,3] #SE_obs
+    
+    if(permute == TRUE) {
+      # calculate PVE for permuted phenotype
+      per <- OSCA_singleValue(df = prt$reduced_data,
+                              externalVar = externalVar_permute,
+                              oscaPath = oscaPath,
+                              remlAlg = remlAlg,
+                              maxRemlIt = maxRemlIt,
+                              catCovars = catCovars,
+                              numCovars = numCovars)
+      tmp[6] <- per[,2] #PVE_per
+      tmp[7] <- per[,3] #SE_per
+    }
+    
+    message(paste0("ILC = ", ILClist[i], " complete."))
+    return(tmp)
+  }
+  
+  # close connection
+  parallel::stopCluster(cl = my.cluster)
+  
+  # column names for results df
+  results           <- as.data.frame(results)
+  if(permute == TRUE) {
     colnames(results) <- c("ILC", "InformationLost", "PercentReduction", "VarianceExplained_Observed", "SE_Observed", "VarianceExplained_Permuted", "SE_Permuted")
   } else {
-    # for each ILC value
-    results <- foreach (i = 1:length(ILClist),
-                        .combine = rbind,
-                        .packages = c("partition", "data.table"),
-                        .export = c("OSCA_singleValue")) %dopar% {
-                          # vector to store results
-                          tmp <- c(ILClist[i])
-                          
-                          # partition for given ILC; save out information lost and percent reduction
-                          if(dim(df)[[2]] > 4000) {
-                            prt <- super_partition(df, threshold = ILClist[i])
-                          } else {
-                            prt <- partition(df, threshold = ILClist[i])
-                          }
-                          tmp[2] <- round(total.info.lost(prt$mapping_key), 3) #infoLost
-                          tmp[3] <- round((1 - ncol(prt$reduced_data)/dim(df)[[2]])*100, 3) #percRed
-                          
-                          # calculate PVE for observed phenotype
-                          obs    <- OSCA_singleValue(df = prt$reduced_data,
-                                                     externalVar = externalVar,
-                                                     oscaPath = oscaPath,
-                                                     remlAlg = remlAlg,
-                                                     maxRemlIt = maxRemlIt,
-                                                     catCovars = catCovars,
-                                                     numCovars = numCovars)
-                          tmp[4] <- obs[,2] #PVE_obs
-                          tmp[5] <- obs[,3] #SE_obs
-                          
-                          message(paste0("ILC = ", ILClist[i], " complete."))
-                          return(tmp)
-                        }
-    
-    # close connection
-    parallel::stopCluster(cl = my.cluster)
-    
-    # column names for results df
-    results           <- tibble(results)
     colnames(results) <- c("ILC", "InformationLost", "PercentReduction", "VarianceExplained_Observed", "SE_Observed")
   }
   
