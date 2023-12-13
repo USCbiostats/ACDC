@@ -5,6 +5,8 @@
 #' @param fileLoc absolute file path to bed, bim, and fam files, including prefix
 #' @param externalVar vector of length n of external variable values with no ID column; must be in the same sample order as bed, bim, fam files
 #' @param gctaPath absolute path to GCTA software
+#' @param remlAlg algorithm to run REML iterations in GCTA; 0 = average information (AI), 1 = Fisher-scoring, 2 = EM; default is 0 (AI)
+#' @param maxRemlIt the maximum number of REML iterations; default is 100
 #' @param numCovars n x c_n matrix of numerical covariates to adjust heritability model for; must be in same person order as fam file; default is NULL
 #' @param catCovars n x c_c matrix of categorical covariates to adjust heritability model for; must be in same person order as fam file; default is NULL
 #' @return Row of GREML output containing heritability point estimate of external data and standard error
@@ -36,9 +38,16 @@
 #' @import genio
 GCTA_singleValue <- function(fileLoc, 
                              externalVar, 
-                             gctaPath, 
+                             gctaPath,
+                             remlAlg = 0,
+                             maxRemlIt = 100,
                              numCovars = NULL, 
                              catCovars = NULL) {
+  
+  # check parameters
+  if(!(remlAlg %in% c(0,1,2))) stop("remlAlg must be 0, 1, or 2.")
+  if(!is.numeric(maxRemlIt)) stop("maxRemlIt must be numeric.")
+  if(maxRemlIt < 0) stop("maxRemlIt must be positive")
   
   ## 1. save out external data in temporary file
   # read in fam file
@@ -56,14 +65,14 @@ GCTA_singleValue <- function(fileLoc,
   if(!is.null(numCovars)) {
     numCovars <- cbind(fam.file$fam, fam.file$id, numCovars)
     ncf       <- tempfile(pattern = "GCTA", fileext = ".txt")
-    write.table(numCovars, ncf, row.names = F, quote = F)
+    write.table(numCovars, ncf, row.names = F, col.names = F, quote = F)
   }
   
   # categorical covariates
   if(!is.null(catCovars)) {
     catCovars <- cbind(fam.file$fam, fam.file$id, catCovars)
     ccf       <- tempfile(pattern = "GCTA", fileext = ".txt")
-    write.table(catCovars, ccf, row.names = F, quote = F)
+    write.table(catCovars, ccf, row.names = F, col.names = F, quote = F)
   }
   
   ## 3. run GREML
@@ -78,22 +87,25 @@ GCTA_singleValue <- function(fileLoc,
   if(!is.null(catCovars) & !is.null(numCovars)) {
     # include both numeric and categorical covariates
     invisible(system(paste0(gctaPath, "/gcta-1.94.1 --grm ", GRM, " --pheno ", phf, 
-                            " --covar ", ccf, " --qcovar ", ncf, " --reml --out ", herit),
+                            " --covar ", ccf, " --qcovar ", ncf, " --reml --reml-alg ", remlAlg, 
+                            " --reml-maxit ", maxRemlIt, " --out ", herit),
                      intern=T))
   } else if(!is.null(catCovars)) {
     # include only categorical covariates
     invisible(system(paste0(gctaPath, "/gcta-1.94.1 --grm ", GRM, " --pheno ", phf, 
-                            " --covar ", ccf, " --reml --out ", herit),
+                            " --covar ", ccf, " --reml --reml-alg ", remlAlg, 
+                            " --reml-maxit ", maxRemlIt, " --out ", herit),
                      intern=T))
   } else if(!is.null(numCovars)) {
     # include only numeric covariates
     invisible(system(paste0(gctaPath, "/gcta-1.94.1 --grm ", GRM, " --pheno ", phf, 
-                            " --qcovar ", ncf, " --reml --out ", herit),
+                            " --qcovar ", ncf, " --reml --reml-alg ", remlAlg, 
+                            " --reml-maxit ", maxRemlIt, " --out ", herit),
                      intern=T))
   } else {
     # no covariates
     invisible(system(paste0(gctaPath, "/gcta-1.94.1 --grm ", GRM, " --pheno ", phf, 
-                            " --reml --out ", herit),
+                            " --reml --reml-alg ", remlAlg, " --reml-maxit ", maxRemlIt, " --out ", herit),
                      intern=T))
   }
   

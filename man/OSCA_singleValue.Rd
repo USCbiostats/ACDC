@@ -4,7 +4,15 @@
 \alias{OSCA_singleValue}
 \title{OSCA_singleValue}
 \usage{
-OSCA_singleValue(df, externalVar, oscaPath, numCovars = NULL, catCovars = NULL)
+OSCA_singleValue(
+  df,
+  externalVar,
+  oscaPath,
+  remlAlg = 0,
+  maxRemlIt = 100,
+  numCovars = NULL,
+  catCovars = NULL
+)
 }
 \arguments{
 \item{df}{n x p dataframe or matrix of numeric -omics values with no ID column}
@@ -12,6 +20,10 @@ OSCA_singleValue(df, externalVar, oscaPath, numCovars = NULL, catCovars = NULL)
 \item{externalVar}{vector of length n of external variable values with no ID column}
 
 \item{oscaPath}{absolute path to OSCA software}
+
+\item{remlAlg}{which algorithm to run REML iterations in GCTA; 0 = average information (AI), 1 = Fisher-scoring, 2 = EM; default is 0 (AI)}
+
+\item{maxRemlIt}{the maximum number of REML iterations; default is 100}
 
 \item{numCovars}{n x c_n matrix of numerical covariates to adjust heritability model for; must be in same person order as fam file; default is NULL}
 

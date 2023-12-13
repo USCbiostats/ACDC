@@ -6,10 +6,12 @@
 #' @param externalVar vector of length n of external variable values with no ID column
 #' @param ILCincrement float between zero and one determining interval between tested ILC values; default is 0.05
 #' @param oscaPath absolute path to OSCA software
-#' @param numNodes number of available compute nodes for parallelization; default is 1
-#' @param permute boolean value for whether or not to calculate values for a random permutation of the external variable; default is true
+#' @param remlAlg  which algorithm to run REML iterations in GCTA; 0 = average information (AI), 1 = Fisher-scoring, 2 = EM; default is 0 (AI)
+#' @param maxRemlIt the maximum number of REML iterations; default is 100
 #' @param numCovars n x c_n matrix of numerical covariates to adjust heritability model for; must be in same person order as externalVar; default is NULL
 #' @param catCovars n x c_c matrix of categorical covariates to adjust heritability model for; must be in same person order as externalVar; default is NULL
+#' @param permute boolean value for whether or not to calculate values for a random permutation of the external variable; default is true
+#' @param numNodes number of available compute nodes for parallelization; default is 1
 #' 
 #' @return Tibble with columns
 #' 
@@ -65,18 +67,23 @@
 OSCA_par <- function(df, 
                      externalVar, 
                      ILCincrement = 0.05, 
-                     oscaPath, 
-                     numNodes = 1, 
-                     permute = TRUE,
+                     oscaPath,
+                     remlAlg = 0,
+                     maxRemlIt = 100,
                      numCovars = NULL,
-                     catCovars = NULL) {
+                     catCovars = NULL,
+                     permute = TRUE,
+                     numNodes = 1) {
   
-  # check correct dimensions of input
+  # check parameters
   if(nrow(df) != length(externalVar)) stop("fullData and externalVar must have the same number of rows.")
   if(0 > ILCincrement | 1 < ILCincrement) stop("ILCincrement must be between 0 and 1.")
+  if(!(remlAlg %in% c(0,1,2))) stop("remlAlg must be 0, 1, or 2.")
+  if(!is.numeric(maxRemlIt)) stop("maxRemlIt must be numeric.")
+  if(maxRemlIt < 0) stop("maxRemlIt must be positive")
   
   # iteration counter
-  i = 0
+  i <- 0
   
   ## Function to return weighted total information lost in reduced dataset
   # df -- mapping key from partition
@@ -120,6 +127,8 @@ OSCA_par <- function(df,
                           obs    <- OSCA_singleValue(df = prt$reduced_data,
                                                      externalVar = externalVar,
                                                      oscaPath = oscaPath,
+                                                     remlAlg = remlAlg,
+                                                     maxRemlIt = maxRemlIt,
                                                      catCovars = catCovars,
                                                      numCovars = numCovars)
                           tmp[4] <- obs[,2] #PVE_obs
@@ -129,6 +138,8 @@ OSCA_par <- function(df,
                           per <- OSCA_singleValue(df = prt$reduced_data,
                                                   externalVar = externalVar_permute,
                                                   oscaPath = oscaPath,
+                                                  remlAlg = remlAlg,
+                                                  maxRemlIt = maxRemlIt,
                                                   catCovars = catCovars,
                                                   numCovars = numCovars)
                           tmp[6] <- per[,2] #PVE_per
@@ -166,6 +177,8 @@ OSCA_par <- function(df,
                           obs    <- OSCA_singleValue(df = prt$reduced_data,
                                                      externalVar = externalVar,
                                                      oscaPath = oscaPath,
+                                                     remlAlg = remlAlg,
+                                                     maxRemlIt = maxRemlIt,
                                                      catCovars = catCovars,
                                                      numCovars = numCovars)
                           tmp[4] <- obs[,2] #PVE_obs

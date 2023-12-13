@@ -5,6 +5,8 @@
 #' @param df n x p dataframe or matrix of numeric -omics values with no ID column
 #' @param externalVar vector of length n of external variable values with no ID column
 #' @param oscaPath absolute path to OSCA software
+#' @param remlAlg  which algorithm to run REML iterations in GCTA; 0 = average information (AI), 1 = Fisher-scoring, 2 = EM; default is 0 (AI)
+#' @param maxRemlIt the maximum number of REML iterations; default is 100
 #' @param numCovars n x c_n matrix of numerical covariates to adjust heritability model for; must be in same person order as fam file; default is NULL
 #' @param catCovars n x c_c matrix of categorical covariates to adjust heritability model for; must be in same person order as fam file; default is NULL
 #' 
@@ -45,11 +47,16 @@
 OSCA_singleValue <- function(df, 
                              externalVar, 
                              oscaPath,
+                             remlAlg = 0,
+                             maxRemlIt = 100,
                              numCovars = NULL,
                              catCovars = NULL) {
   
-  # check correct dimensions of input
+  # check parameters
   if(nrow(df) != length(externalVar)) stop("fullData and externalVar must have the same number of rows.")
+  if(!(remlAlg %in% c(0,1,2))) stop("remlAlg must be 0, 1, or 2.")
+  if(!is.numeric(maxRemlIt)) stop("maxRemlIt must be numeric.")
+  if(maxRemlIt < 0) stop("maxRemlIt must be positive")
   
   # ensure df is a dataframe
   df <- as.data.frame(df)
@@ -72,14 +79,14 @@ OSCA_singleValue <- function(df,
   if(!is.null(numCovars)) {
     numCovars <- cbind(df$IID, df$IID, numCovars)
     ncf       <- tempfile(pattern = "OSCA", fileext = ".txt")
-    write.table(numCovars, ncf, row.names = F, quote = F)
+    write.table(numCovars, ncf, row.names = F, col.names = F, quote = F)
   }
   
   # categorical covariates
   if(!is.null(catCovars)) {
     catCovars <- cbind(df$IID, df$IID, catCovars)
     ccf       <- tempfile(pattern = "OSCA", fileext = ".txt")
-    write.table(catCovars, ccf, row.names = F, quote = F)
+    write.table(catCovars, ccf, row.names = F, col.names = F, quote = F)
   }
   
   ## 2. run OSCA
@@ -95,23 +102,24 @@ OSCA_singleValue <- function(df,
   OREML <- tempfile(pattern = "OSCA", fileext = ".txt")
   if(!is.null(catCovars) & !is.null(numCovars)) {
     # include both numeric and categorical covariates
-    invisible(system(paste0(oscaPath, " osca --reml --orm ", ormFile, " --pheno ", phf, 
-                            " --qcovar ", ncf, " --covar ", ccf," --no-fid --out ", OREML),
+    invisible(system(paste0(oscaPath, " osca --reml --reml-alg ", remlAlg, " --reml-maxit ", maxRemlIt, 
+                            " --orm ", ormFile, " --pheno ", phf, " --qcovar ", ncf, " --covar ", ccf, 
+                            " --no-fid --out ", OREML),
                      intern=T))
   } else if(!is.null(catCovars)) {
     # include only categorical covariates
-    invisible(system(paste0(oscaPath, " osca --reml --orm ", ormFile, " --pheno ", phf, 
-                            " --covar ", ccf, " --no-fid --out ", OREML),
+    invisible(system(paste0(oscaPath, " osca --reml --reml-alg ", remlAlg, " --reml-maxit ", maxRemlIt, 
+                            " --orm ", ormFile, " --pheno ", phf, " --covar ", ccf, " --no-fid --out ", OREML),
                      intern=T))
   } else if(!is.null(numCovars)) {
     # include only numeric covariates
-    invisible(system(paste0(oscaPath, " osca --reml --orm ", ormFile, " --pheno ", phf, 
-                            " --qcovar ", ncf, " --no-fid --out ", OREML),
+    invisible(system(paste0(oscaPath, " osca --reml --reml-alg ", remlAlg, " --reml-maxit ", maxRemlIt, 
+                            " --orm ", ormFile, " --pheno ", phf, " --qcovar ", ncf, " --no-fid --out ", OREML),
                      intern=T))
   } else {
     # no covariates
-    invisible(system(paste0(oscaPath, " osca --reml --orm ", ormFile, " --pheno ", phf, 
-                            " --no-fid --out ", OREML), 
+    invisible(system(paste0(oscaPath, " osca --reml --reml-alg ", remlAlg, " --reml-maxit ", maxRemlIt, 
+                            " --orm ", ormFile, " --pheno ", phf, " --no-fid --out ", OREML), 
                      intern=T))
   }
   

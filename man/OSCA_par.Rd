@@ -9,10 +9,12 @@ OSCA_par(
   externalVar,
   ILCincrement = 0.05,
   oscaPath,
-  numNodes = 1,
-  permute = TRUE,
+  remlAlg = 0,
+  maxRemlIt = 100,
   numCovars = NULL,
-  catCovars = NULL
+  catCovars = NULL,
+  permute = TRUE,
+  numNodes = 1
 )
 }
 \arguments{
@@ -24,13 +26,17 @@ OSCA_par(
 
 \item{oscaPath}{absolute path to OSCA software}
 
-\item{numNodes}{number of available compute nodes for parallelization; default is 1}
+\item{remlAlg}{which algorithm to run REML iterations in GCTA; 0 = average information (AI), 1 = Fisher-scoring, 2 = EM; default is 0 (AI)}
 
-\item{permute}{boolean value for whether or not to calculate values for a random permutation of the external variable; default is true}
+\item{maxRemlIt}{the maximum number of REML iterations; default is 100}
 
 \item{numCovars}{n x c_n matrix of numerical covariates to adjust heritability model for; must be in same person order as externalVar; default is NULL}
 
 \item{catCovars}{n x c_c matrix of categorical covariates to adjust heritability model for; must be in same person order as externalVar; default is NULL}
+
+\item{permute}{boolean value for whether or not to calculate values for a random permutation of the external variable; default is true}
+
+\item{numNodes}{number of available compute nodes for parallelization; default is 1}
 }
 \value{
 Tibble with columns

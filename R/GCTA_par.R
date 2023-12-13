@@ -6,12 +6,14 @@
 #' @param ILCincrement float between zero and one determining interval between tested ILC values; default is 0.05
 #' @param fileLoc absolute file path to bed, bim, and fam files, including prefix
 #' @param gctaPath absolute path to GCTA software
+#' @param remlAlg  which algorithm to run REML iterations in GCTA; 0 = average information (AI), 1 = Fisher-scoring, 2 = EM; default is 0 (AI)
+#' @param maxRemlIt the maximum number of REML iterations; default is 100
+#' @param numCovars n x c_n matrix of numerical covariates to adjust heritability model for; must be in same person order as fam file; default is NULL
+#' @param catCovars n x c_c matrix of categorical covariates to adjust heritability model for; must be in same person order as fam file; default is NULL
 #' @param summaryType one of "coexpression" or "covariance"; determines how to summarize each module
 #' @param permute boolean value for whether or not to calculate values for a random permutation module summary; default is true
 #' @param numNodes number of available compute nodes for parallelization; default is 1
-#' @param numCovars n x c_n matrix of numerical covariates to adjust heritability model for; must be in same person order as fam file; default is NULL
-#' @param catCovars n x c_c matrix of categorical covariates to adjust heritability model for; must be in same person order as fam file; default is NULL
-#'
+#' 
 #' @return Tibble with columns
 # 
 #' \describe{
@@ -63,19 +65,24 @@
 GCTA_par <- function(df, 
                      ILCincrement = 0.05, 
                      fileLoc, 
-                     gctaPath, 
+                     gctaPath,
+                     remlAlg = 0,
+                     maxRemlIt = 100,
+                     numCovars = NULL, 
+                     catCovars = NULL,
                      summaryType, 
                      permute = TRUE, 
-                     numNodes = 1, 
-                     numCovars = NULL, 
-                     catCovars = NULL) {
+                     numNodes = 1) {
   
-  # data checks
+  # check parameters
   if(0 > ILCincrement | 1 < ILCincrement) stop("ILCincrement must be between 0 and 1.")
   if(!(summaryType == "coexpression" | summaryType == "covariance")) stop("summaryType must be either covariance or coexpression.")
+  if(!(remlAlg %in% c(0,1,2))) stop("remlAlg must be 0, 1, or 2.")
+  if(!is.numeric(maxRemlIt)) stop("maxRemlIt must be numeric.")
+  if(maxRemlIt < 0) stop("maxRemlIt must be positive")
   
   # iteration counter
-  i = j = k = m = 0
+  i <- j <- k <- m <- 0
   
   ## Function to return weighted total information lost in reduced dataset
   # df -- mapping key from partition
@@ -172,6 +179,8 @@ GCTA_par <- function(df,
                             obs <- GCTA_singleValue(fileLoc = fileLoc,
                                                     externalVar = coex.PCs[, k],
                                                     gctaPath = gctaPath,
+                                                    remlAlg = remlAlg,
+                                                    maxRemlIt = maxRemlIt,
                                                     catCovars = catCovars,
                                                     numCovars = numCovars)
                             coex.herit <- append(coex.herit, obs[,2])
@@ -182,6 +191,8 @@ GCTA_par <- function(df,
                               perm <- GCTA_singleValue(fileLoc = fileLoc,
                                                        externalVar = sample(coex.PCs[, k]),
                                                        gctaPath = gctaPath,
+                                                       remlAlg = remlAlg,
+                                                       maxRemlIt = maxRemlIt,
                                                        catCovars = catCovars,
                                                        numCovars = numCovars)
                               coex.herit.perm <- append(coex.herit.perm, perm[,2])
@@ -213,6 +224,8 @@ GCTA_par <- function(df,
                             obs <- GCTA_singleValue(fileLoc = fileLoc,
                                                     externalVar = covar.PCs[, m],
                                                     gctaPath = gctaPath,
+                                                    remlAlg = remlAlg,
+                                                    maxRemlIt = maxRemlIt,
                                                     catCovars = catCovars,
                                                     numCovars = numCovars)
                             covar.herit <- append(covar.herit, obs[,2])
@@ -223,6 +236,8 @@ GCTA_par <- function(df,
                               perm <- GCTA_singleValue(fileLoc = fileLoc,
                                                        externalVar = sample(covar.PCs[, m]),
                                                        gctaPath = gctaPath,
+                                                       remlAlg = remlAlg,
+                                                       maxRemlIt = maxRemlIt,
                                                        catCovars = catCovars,
                                                        numCovars = numCovars)
                               covar.herit.perm <- append(covar.herit.perm, perm[,2])
