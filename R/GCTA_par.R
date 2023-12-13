@@ -265,7 +265,7 @@ GCTA_par <- function(df,
                       }
   
   # column names for results df
-  results <- data.frame(results)
+  results <- tibble(results)
   if(permute == TRUE) {
     colnames(results) <- c("ILC", "InformationLost", "PercentReduction", 
                            "AveVarianceExplained_Observed", "AveSE_Observed", "VarianceExplained_Observed",
