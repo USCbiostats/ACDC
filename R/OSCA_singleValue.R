@@ -56,7 +56,7 @@ OSCA_singleValue <- function(df,
   if(nrow(df) != length(externalVar)) stop("fullData and externalVar must have the same number of rows.")
   if(!(remlAlg %in% c(0,1,2))) stop("remlAlg must be 0, 1, or 2.")
   if(!is.numeric(maxRemlIt)) stop("maxRemlIt must be numeric.")
-  if(maxRemlIt < 0) stop("maxRemlIt must be positive")
+  if(maxRemlIt < 0) stop("maxRemlIt must be positive.")
   
   # ensure df is a dataframe
   df <- as.data.frame(df)

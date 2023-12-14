@@ -6,7 +6,7 @@
 #' @param ILCincrement float between zero and one determining interval between tested ILC values; default is 0.05
 #' @param fileLoc absolute file path to bed, bim, and fam files, including prefix
 #' @param gctaPath absolute path to GCTA software
-#' @param remlAlg  which algorithm to run REML iterations in GCTA; 0 = average information (AI), 1 = Fisher-scoring, 2 = EM; default is 0 (AI)
+#' @param remlAlg algorithm to run REML iterations in GCTA; 0 = average information (AI), 1 = Fisher-scoring, 2 = EM; default is 0 (AI)
 #' @param maxRemlIt the maximum number of REML iterations; default is 100
 #' @param numCovars n x c_n matrix of numerical covariates to adjust heritability model for; must be in same person order as fam file; default is NULL
 #' @param catCovars n x c_c matrix of categorical covariates to adjust heritability model for; must be in same person order as fam file; default is NULL
@@ -79,7 +79,7 @@ GCTA_par <- function(df,
   if(!(summaryType == "coexpression" | summaryType == "covariance")) stop("summaryType must be either covariance or coexpression.")
   if(!(remlAlg %in% c(0,1,2))) stop("remlAlg must be 0, 1, or 2.")
   if(!is.numeric(maxRemlIt)) stop("maxRemlIt must be numeric.")
-  if(maxRemlIt < 0) stop("maxRemlIt must be positive")
+  if(maxRemlIt < 0) stop("maxRemlIt must be positive.")
   
   # iteration counter
   i <- j <- k <- m <- 0

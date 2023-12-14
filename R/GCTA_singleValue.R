@@ -47,7 +47,7 @@ GCTA_singleValue <- function(fileLoc,
   # check parameters
   if(!(remlAlg %in% c(0,1,2))) stop("remlAlg must be 0, 1, or 2.")
   if(!is.numeric(maxRemlIt)) stop("maxRemlIt must be numeric.")
-  if(maxRemlIt < 0) stop("maxRemlIt must be positive")
+  if(maxRemlIt < 0) stop("maxRemlIt must be positive.")
   
   ## 1. save out external data in temporary file
   # read in fam file

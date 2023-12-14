@@ -80,7 +80,7 @@ OSCA_par <- function(df,
   if(0 > ILCincrement | 1 < ILCincrement) stop("ILCincrement must be between 0 and 1.")
   if(!(remlAlg %in% c(0,1,2))) stop("remlAlg must be 0, 1, or 2.")
   if(!is.numeric(maxRemlIt)) stop("maxRemlIt must be numeric.")
-  if(maxRemlIt < 0) stop("maxRemlIt must be positive")
+  if(maxRemlIt < 0) stop("maxRemlIt must be positive.")
   
   # iteration counter
   i <- 0
