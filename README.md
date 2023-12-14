@@ -1,6 +1,12 @@
+[![CRAN status](https://www.r-pkg.org/badges/version/modACDC)](https://cran.r-project.org/package=modACDC)
+[![CRAN downloads](http://cranlogs.r-pkg.org/badges/grand-total/modACDC)](https://cran.r-project.org/package=modACDC)
+[![status](https://tinyverse.netlify.com/badge/modACDC)](https://CRAN.R-project.org/package=modACDC)
+
 # modACDC
 
-Association of covariance to detect differential co-expression (ACDC) is a novel approach for detection of differential co-expression that simultaneously accommodates multiple phenotypes or exposures with binary, ordinal, or continuous data types. The default method (ACDC) identifies modules using Partition and the modACDC method allows users to supply their own modules. Also included are functions to choose an information loss criterion (ILC) for Partition using OmicS-data-based Complex trait Analysis (OSCA).
+Association of covariance to detect differential co-expression (ACDC) is a novel approach for detection of differential co-expression that simultaneously accommodates multiple phenotypes or exposures with binary, ordinal, or continuous data types. The default method (ACDC) identifies modules using Partition and the modACDC method allows users to supply their own modules. Also included are functions to choose an information loss criterion (ILC) for Partition using OmicS-data-based Complex trait Analysis (OSCA) or Genomics Complex Trait Analysis (GCTA).
+
+The manuscript for ACDC can be found [here] (https://www.frontiersin.org/articles/10.3389/fmed.2023.1118824/full).
 
 ## Installation
 
