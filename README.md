@@ -10,10 +10,17 @@ The manuscript for ACDC can be found [here](https://www.frontiersin.org/articles
 
 ## Installation
 
-You can install modACDC with:
+You can install modACDC directly from CRAN with:
 
 ``` r
 install.packages("modACDC")
+```
+
+Or you can install the development, GitHub version with:
+
+```{r}
+# install.packages("remotes")
+remotes::install_github("USCbiostats/ACDC")
 ```
 
 ## OSCA
