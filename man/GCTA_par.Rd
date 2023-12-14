@@ -27,7 +27,7 @@ GCTA_par(
 
 \item{gctaPath}{absolute path to GCTA software}
 
-\item{remlAlg}{which algorithm to run REML iterations in GCTA; 0 = average information (AI), 1 = Fisher-scoring, 2 = EM; default is 0 (AI)}
+\item{remlAlg}{algorithm to run REML iterations in GCTA; 0 = average information (AI), 1 = Fisher-scoring, 2 = EM; default is 0 (AI)}
 
 \item{maxRemlIt}{the maximum number of REML iterations; default is 100}
 
