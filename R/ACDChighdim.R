@@ -51,12 +51,18 @@
 #' @author Katelyn Queen, \email{kjqueen@@usc.edu}
 #' 
 #' @export
-#' @import CCA
-#' @import CCP
-#' @import utils
-#' @import stats
-#' @import tidyr
-ACDChighdim <- function(moduleIdentifier = 1, moduleCols, fullData, externalVar, identifierList=colnames(fullData), corrThreshold = 0.75) {
+ACDChighdim <- function(moduleIdentifier = 1, 
+                        moduleCols, 
+                        fullData, 
+                        externalVar, 
+                        identifierList=colnames(fullData), 
+                        corrThreshold = 0.75) {
+  
+  # check correct dimensions of input
+  if(nrow(fullData) != nrow(externalVar)) stop("fullData and externalVar must have the same number of rows.")
+  if(ncol(fullData) != length(identifierList)) stop("identifierList must be the same length as the number of columns in fullData.")
+  if(length(moduleCols) == 0) stop("No modules input.")
+  if(corrThreshold < 0 | corrThreshold > 1) stop("corrThreshold must be between 0 and 1.")
   
   # to remove "no visible binding" note
   moduleNum <- CCA_pval <- numPairsUsed <- NULL
@@ -74,12 +80,6 @@ ACDChighdim <- function(moduleIdentifier = 1, moduleCols, fullData, externalVar,
   fullData    <- as.data.frame(fullData)
   externalVar <- as.data.frame(externalVar)
   if(is.null(identifierList)) identifierList <- colnames(fullData)
-  
-  # check correct dimensions of input
-  if(nrow(fullData) != nrow(externalVar)) stop("fullData and externalVar must have the same number of rows.")
-  if(ncol(fullData) != length(identifierList)) stop("identifierList must be the same length as the number of columns in fullData.")
-  if(length(moduleCols) == 0) stop("No modules input.")
-  if(corrThreshold < 0 | corrThreshold > 1) stop("corrThreshold must be between 0 and 1.")
   
   # results set up 
   tmp    <- c(moduleIdentifier)
@@ -135,10 +135,10 @@ ACDChighdim <- function(moduleIdentifier = 1, moduleCols, fullData, externalVar,
   connectivity <- apply(colpairs, MARGIN = 1, FUN = connectivity_calc, fd = fullData)
   
   # run CCA and calculate p-value
-  cca_results <- cancor(connectivity, externalVar, ycenter = F)
+  cca_results <- CCA::cancor(connectivity, externalVar, ycenter = F)
   tmp[4]      <- list(cca_results$cor)
   if (ncol(connectivity) > 1 | ncol(externalVar) > 1) {
-    tmp[5] <- hush(p.asym(rho = cca_results$cor,
+    tmp[5] <- hush(CCP::p.asym(rho = cca_results$cor,
                           N = dim(connectivity)[1],
                           p = dim(connectivity)[2],
                           q = dim(externalVar)[2],
@@ -153,11 +153,12 @@ ACDChighdim <- function(moduleIdentifier = 1, moduleCols, fullData, externalVar,
   tmp[6] <- nrow(colpairs)
   
   # return same output that will rowbind with ACDC output
-  results <- tibble(t(tmp))
+  results <- tibble::tibble(t(tmp))
   colnames(results) <- c("moduleNum", "colNames", "features", "CCA_corr", "CCA_pval", "numPairsUsed")
   
   # unnest columns that don't need to be lists
   results <- unnest(results, c(moduleNum, CCA_pval, numPairsUsed))
   
-  return(results)
+  # to return
+  results
 }

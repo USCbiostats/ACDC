@@ -33,9 +33,6 @@
 #' @author Katelyn Queen, \email{kjqueen@@usc.edu}
 #' 
 #' @export
-#' @import data.table 
-#' @import utils
-#' @import genio
 GCTA_singleValue <- function(fileLoc, 
                              externalVar, 
                              gctaPath,
@@ -51,7 +48,7 @@ GCTA_singleValue <- function(fileLoc,
   
   ## 1. save out external data in temporary file
   # read in fam file
-  fam.file <- read_fam(paste0(fileLoc, ".fam"), verbose = FALSE)
+  fam.file <- genio::read_fam(paste0(fileLoc, ".fam"), verbose = FALSE)
   
   # write out external data
   evar_file <- data.frame(IID = fam.file$fam,
@@ -115,5 +112,7 @@ GCTA_singleValue <- function(fileLoc,
   ## 5. delete temporary files and return results
   tmp_dir <- tempdir()
   file.remove(list.files(tmp_dir, full.names = T, pattern = "GCTA"))
-  return(data[data$Source == "V(G)/Vp",])
+  
+  # to return
+  data[data$Source == "V(G)/Vp", ]
 }

@@ -49,16 +49,18 @@
 #' @author Katelyn Queen, \email{kjqueen@@usc.edu}
 #' 
 #' @export
-#' @import partition
 #' @import CCA
 #' @import CCP
-#' @import utils
-#' @import stats
-#' @import tidyr
-#' @import foreach
-#' @import doParallel
-#' @import parallel
-ACDC <- function(fullData, ILC = 0.50, externalVar, identifierList = colnames(fullData), numNodes = 1) {
+ACDC <- function(fullData, 
+                 ILC = 0.50, 
+                 externalVar, 
+                 identifierList = colnames(fullData), 
+                 numNodes = 1) {
+  
+  # check correct dimensions of input
+  if(nrow(fullData) != nrow(externalVar)) stop("fullData and externalVar must have the same number of rows.")
+  if(ncol(fullData) != length(identifierList)) stop("identifierList must be the same length as the number of columns in fullData.")
+  if(0 > ILC | 1 < ILC) stop("ILC must be between 0 and 1.")
   
   # to remove "no visible binding" note
   moduleNum <- CCA_pval <- NULL
@@ -77,19 +79,14 @@ ACDC <- function(fullData, ILC = 0.50, externalVar, identifierList = colnames(fu
   externalVar <- as.data.frame(externalVar)
   if(is.null(identifierList)) identifierList <- colnames(fullData)
   
-  # check correct dimensions of input
-  if(nrow(fullData) != nrow(externalVar)) stop("fullData and externalVar must have the same number of rows.")
-  if(ncol(fullData) != length(identifierList)) stop("identifierList must be the same length as the number of columns in fullData.")
-  if(0 > ILC | 1 < ILC) stop("ILC must be between 0 and 1.")
-  
   # iteration counter
   i = 0
   
   # partition and find modules
   if(dim(fullData)[[2]] > 4000) {
-    part <- superPartition(fullData, threshold = ILC)
+    part <- partition::superPartition(fullData, threshold = ILC)
   } else {
-    part <- partition(fullData, threshold = ILC)
+    part <- partition::partition(fullData, threshold = ILC)
   }
   modules <- part$mapping_key[which(grepl("reduced_var_", part$mapping_key$variable)), ]$indices
   
@@ -102,7 +99,7 @@ ACDC <- function(fullData, ILC = 0.50, externalVar, identifierList = colnames(fu
   doParallel::registerDoParallel(my.cluster)
   
   # for each module...
-  results <- foreach (i = 1:length(modules),
+  results <- foreach::foreach (i = 1:length(modules),
                       .combine = rbind,
                       .packages = c("CCA", "CCP"),
                       .export = c("coVar")) %dopar% {
@@ -130,10 +127,10 @@ ACDC <- function(fullData, ILC = 0.50, externalVar, identifierList = colnames(fu
                           
                           # run CCA, save out correlation coefficients and wilks-lambda test
                           ## CCA_corr and CCA_pval
-                          cca_results <- cancor(connectivity, externalVar, ycenter = F)
+                          cca_results <- CCA::cancor(connectivity, externalVar, ycenter = F)
                           tmp[4]      <- list(cca_results$cor)
                           if (ncol(connectivity) > 1 | ncol(externalVar) > 1) {
-                            tmp[5]  <- hush(p.asym(rho = cca_results$cor,
+                            tmp[5]  <- hush(CCP::p.asym(rho = cca_results$cor,
                                                    N = dim(connectivity)[1],
                                                    p = dim(connectivity)[2],
                                                    q = dim(externalVar)[2],
@@ -151,7 +148,7 @@ ACDC <- function(fullData, ILC = 0.50, externalVar, identifierList = colnames(fu
   parallel::stopCluster(cl = my.cluster)
   
   # column names for results df
-  results           <- tibble(results)
+  results           <- tibble::tibble(results)
   colnames(results) <- c("moduleNum", "colNames", "features", "CCA_corr", "CCA_pval")
   
   # unnest columns that don't need to be lists
@@ -161,5 +158,6 @@ ACDC <- function(fullData, ILC = 0.50, externalVar, identifierList = colnames(fu
   results            <- results[order(results$CCA_pval), ]
   results$BHFDR_qval <- p.adjust(results$CCA_pval, method="BH")
   
-  return(results)
+  # to return
+  results
 }

@@ -15,7 +15,8 @@ GCTA_par(
   catCovars = NULL,
   summaryType,
   permute = TRUE,
-  numNodes = 1
+  numNodes = 1,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ GCTA_par(
 \item{permute}{boolean value for whether or not to calculate values for a random permutation module summary; default is true}
 
 \item{numNodes}{number of available compute nodes for parallelization; default is 1}
+
+\item{verbose}{logical for whether or not to display progress updates; default is TRUE}
 }
 \value{
 Tibble with columns

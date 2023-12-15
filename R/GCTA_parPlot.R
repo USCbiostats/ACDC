@@ -35,8 +35,6 @@
 #' @author Katelyn Queen, \email{kjqueen@@usc.edu}
 #' 
 #' @export
-#' @import ggplot2
-#' @import tools
 GCTA_parPlot <- function(df, dataName = "", summaryType) {
   
   # check that summaryType is correct
@@ -53,30 +51,30 @@ GCTA_parPlot <- function(df, dataName = "", summaryType) {
   }
 
   # create and return graph
-  return(ggplot(data=df) +
-           geom_line(aes(x = InformationLost, y = AveVarianceExplained_Observed,
-                         color="Observed"), size=0.75) +
-           geom_pointrange(aes(x = InformationLost, y = AveVarianceExplained_Observed,
-                               ymin = AVEObs_lower, 
-                               ymax = AVEObs_upper,
-                               color = "Observed")) +
-           geom_point(aes(x = InformationLost, y = AveVarianceExplained_Permuted,
-                          color="Permuted"), size=2) +
-           geom_line(aes(x = InformationLost, y = AveVarianceExplained_Permuted,
-                         color="Permuted"), size=0.75) +
-           ylim(c(0, 1)) + 
-           xlab("Information Lost") +
-           ylab("Heritability") +
-           ggtitle(paste0("Heritability of Gene Module ", toTitleCase(summaryType), 
-                          "\n in ", dataName)) +
-           scale_x_continuous(breaks = seq(0, 100, by=25),
-                              sec.axis = sec_axis(~ .,
-                                                  labels = round(df$PercentReduction, 0),
-                                                  breaks = df$InformationLost,
-                                                  name = "Percent Reduction")) +
-           scale_color_manual(name = paste0("Gene ", toTitleCase(summaryType)),
-                              values = c( "Observed" = "steelblue", "Permuted" = "darkred"),
-                              labels = c("Observed", "Permuted")) +
-           theme_bw(base_family = "Times") +
-           theme(plot.title = element_text(face="bold", hjust = 0.5)))
+  ggplot2::ggplot(data=df) +
+     geom_line(aes(x = InformationLost, y = AveVarianceExplained_Observed,
+                   color="Observed"), size=0.75) +
+     geom_pointrange(aes(x = InformationLost, y = AveVarianceExplained_Observed,
+                         ymin = AVEObs_lower, 
+                         ymax = AVEObs_upper,
+                         color = "Observed")) +
+     geom_point(aes(x = InformationLost, y = AveVarianceExplained_Permuted,
+                    color="Permuted"), size=2) +
+     geom_line(aes(x = InformationLost, y = AveVarianceExplained_Permuted,
+                   color="Permuted"), size=0.75) +
+     ylim(c(0, 1)) + 
+     xlab("Information Lost") +
+     ylab("Heritability") +
+     ggtitle(paste0("Heritability of Gene Module ", tools::toTitleCase(summaryType), 
+                    "\n in ", dataName)) +
+     scale_x_continuous(breaks = seq(0, 100, by=25),
+                        sec.axis = sec_axis(~ .,
+                                            labels = round(df$PercentReduction, 0),
+                                            breaks = df$InformationLost,
+                                            name = "Percent Reduction")) +
+     scale_color_manual(name = paste0("Gene ", toTitleCase(summaryType)),
+                        values = c( "Observed" = "steelblue", "Permuted" = "darkred"),
+                        labels = c("Observed", "Permuted")) +
+     theme_bw(base_family = "Times") +
+     theme(plot.title = element_text(face="bold", hjust = 0.5))
 }

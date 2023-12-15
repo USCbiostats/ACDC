@@ -41,7 +41,6 @@
 #' @author Katelyn Queen, \email{kjqueen@@usc.edu}
 #' 
 #' @export
-#' @import ggplot2
 OSCA_parPlot <- function(df, externalVarName = "", dataName = "") {
   
   # to remove "no visible binding" note
@@ -55,27 +54,27 @@ OSCA_parPlot <- function(df, externalVarName = "", dataName = "") {
   }
   
   # create and return graph
-  return(ggplot(data=df) +
-           geom_line(aes(x = InformationLost, y = VarianceExplained_Observed, color="Observed"), size=0.75) +
-           geom_pointrange(aes(x = InformationLost, y = VarianceExplained_Observed,
-                               ymin = VEObs_lower, 
-                               ymax = VEObs_upper,
-                               color = "Observed")) +
-           geom_point(aes(x = InformationLost, y = VarianceExplained_Permuted, color="Permuted"), size=2) +
-           geom_line(aes(x = InformationLost, y = VarianceExplained_Permuted, color="Permuted"), size=0.75) +
-           ylim(c(0,1)) + 
-           xlab("Information Lost") +
-           ylab("Percent Variance Explained") +
-           ggtitle(paste0("Percent Variance Explained in ", 
-                          externalVarName, "\n by ", dataName)) +
-           scale_x_continuous(breaks = seq(0, 100, by=25),
-                              sec.axis = sec_axis(~ .,
-                                                  labels = round(df$PercentReduction, 0),
-                                                  breaks = df$InformationLost,
-                                                  name = "Percent Reduction")) +
-           scale_color_manual(name = externalVarName,
-                              values = c( "Observed" = "steelblue", "Permuted" = "darkred"),
-                              labels = c("Observed", "Permuted")) +
-           theme_bw(base_family = "Times") +
-           theme(plot.title = element_text(face="bold", hjust = 0.5)))
+  ggplot2::ggplot(data=df) +
+     geom_line(aes(x = InformationLost, y = VarianceExplained_Observed, color="Observed"), size=0.75) +
+     geom_pointrange(aes(x = InformationLost, y = VarianceExplained_Observed,
+                         ymin = VEObs_lower, 
+                         ymax = VEObs_upper,
+                         color = "Observed")) +
+     geom_point(aes(x = InformationLost, y = VarianceExplained_Permuted, color = "Permuted"), size=2) +
+     geom_line(aes(x = InformationLost, y = VarianceExplained_Permuted, color = "Permuted"), size=0.75) +
+     ylim(c(0,1)) + 
+     xlab("Information Lost") +
+     ylab("Percent Variance Explained") +
+     ggtitle(paste0("Percent Variance Explained in ", 
+                    externalVarName, "\n by ", dataName)) +
+     scale_x_continuous(breaks = seq(0, 100, by=25),
+                        sec.axis = sec_axis(~ .,
+                                            labels = round(df$PercentReduction, 0),
+                                            breaks = df$InformationLost,
+                                            name = "Percent Reduction")) +
+     scale_color_manual(name = externalVarName,
+                        values = c( "Observed" = "steelblue", "Permuted" = "darkred"),
+                        labels = c("Observed", "Permuted")) +
+     theme_bw(base_family = "Times") +
+     theme(plot.title = element_text(face="bold", hjust = 0.5))
 }

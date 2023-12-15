@@ -13,6 +13,7 @@
 #' @param summaryType one of "coexpression" or "covariance"; determines how to summarize each module
 #' @param permute boolean value for whether or not to calculate values for a random permutation module summary; default is true
 #' @param numNodes number of available compute nodes for parallelization; default is 1
+#' @param verbose logical for whether or not to display progress updates; default is TRUE
 #' 
 #' @return Tibble with columns
 # 
@@ -58,10 +59,8 @@
 #' @export
 #' @import data.table
 #' @import partition
-#' @import foreach
-#' @import doParallel
-#' @import parallel
-#' @import tibble
+#' @import genieclust
+#' @import genio
 GCTA_par <- function(df, 
                      ILCincrement = 0.05, 
                      fileLoc, 
@@ -72,7 +71,8 @@ GCTA_par <- function(df,
                      catCovars = NULL,
                      summaryType, 
                      permute = TRUE, 
-                     numNodes = 1) {
+                     numNodes = 1,
+                     verbose = TRUE) {
   
   # check parameters
   if(0 > ILCincrement | 1 < ILCincrement) stop("ILCincrement must be between 0 and 1.")
@@ -87,14 +87,14 @@ GCTA_par <- function(df,
   ## Function to return weighted total information lost in reduced dataset
   # df -- mapping key from partition
   # @return - information lost, single value
-  total.info.lost <- function(df) {
+  total_info_lost <- function(df) {
     return((1-sum(df$information*lengths(df$indices))/sum(lengths(df$indices)))*100)
   }
   
   # setup
   ILClist <- seq(from=0, to=1, by=ILCincrement)
   
-  message("Starting analysis.")
+  if(verbose) message("Starting analysis.")
   if(dim(df)[[2]] > 4000) message("Using superPartition due to more than 4,000 features.")
   
   # parallel set up
@@ -103,7 +103,7 @@ GCTA_par <- function(df,
   doParallel::registerDoParallel(my.cluster)
   
   # for each ILC value
-  results <- foreach (i = 1:length(ILClist),
+  results <- foreach::foreach (i = 1:length(ILClist),
                       .combine = rbind,
                       .packages = c("partition", "data.table", "genieclust", "genio"),
                       .export = c("GCTA_singleValue")) %dopar% {
@@ -112,19 +112,19 @@ GCTA_par <- function(df,
                         
                         # partition for given ILC; save out information lost, percent reduction, and modules
                         if(dim(df)[[2]] > 4000) {
-                          prt <- super_partition(df, threshold = ILClist[i])
+                          prt <- partition::super_partition(df, threshold = ILClist[i])
                         } else {
-                          prt <- partition(df, threshold = ILClist[i])
+                          prt <- partition::partition(df, threshold = ILClist[i])
                         }
-                        tmp[2]  <- round(total.info.lost(prt$mapping_key), 3) #infoLost
+                        tmp[2]  <- round(total_info_lost(prt$mapping_key), 3) #infoLost
                         tmp[3]  <- round((1 - ncol(prt$reduced_data)/dim(df)[[2]])*100, 3) #percRed
                         modules <- prt$mapping_key[grep("reduced_var_", prt$mapping_key$variable), ]$indices
                         
-                        message(paste0("Partitition completed for ILC = ", ILClist[i], ". ", length(modules), " modules identified."))
+                        if(verbose) message(paste0("Partitition completed for ILC = ", ILClist[i], ". ", length(modules), " modules identified."))
                         
                         # if no modules, stop
                         if(length(modules) == 0)  {
-                          message(paste0("No modules identified when ILC = ", ILClist[i]))
+                          if(verbose) message(paste0("No modules identified when ILC = ", ILClist[i]))
                           
                           # set all values to 0
                           if(permute == TRUE) {
@@ -133,7 +133,7 @@ GCTA_par <- function(df,
                             tmp[4] <- tmp[5] <- tmp[6] <- tmp[7] <- 0 
                           }
                           
-                          message(paste0("ILC = ", ILClist[i], " complete."))
+                          if(verbose) message(paste0("ILC = ", ILClist[i], " complete."))
                           return(tmp)
                         }
                         
@@ -166,7 +166,7 @@ GCTA_par <- function(df,
                           }
                         }
                         
-                        message(paste0("PCs calculated for ILC = ", ILClist[i]))
+                        if(verbose) message(paste0("PCs calculated for ILC = ", ILClist[i]))
                         
                         if(summaryType == "coexpression") {
                           # COEXPRESSION - calculate heritability for each module
@@ -212,7 +212,7 @@ GCTA_par <- function(df,
                             tmp[11] <- list(coex.SE.perm)    # SE for all modules
                           }
                           
-                          message(paste0("Heritability of co-expression calculated for ILC = ", ILClist[i]))
+                          if(verbose) message(paste0("Heritability of co-expression calculated for ILC = ", ILClist[i]))
                         } else if(summaryType == "covariance") {
                           # COVARIANCE - calculate heritability for each module
                           covar.herit <- NULL
@@ -257,15 +257,15 @@ GCTA_par <- function(df,
                             tmp[11] <- list(covar.SE.perm)    # SE for all modules
                           }
                           
-                          message(paste0("Heritability of covariance calculated for ILC = ", ILClist[i]))
+                          if(verbose) message(paste0("Heritability of covariance calculated for ILC = ", ILClist[i]))
                         }
                         
-                        message(paste0("Iteration ", i, " of ", length(ILClist), " complete."))
+                        if(verbose) message(paste0("Iteration ", i, " of ", length(ILClist), " complete."))
                         return(tmp)
                       }
   
   # column names for results df
-  results <- tibble(results)
+  results <- tibble::tibble(results)
   if(permute == TRUE) {
     colnames(results) <- c("ILC", "InformationLost", "PercentReduction", 
                            "AveVarianceExplained_Observed", "AveSE_Observed", "VarianceExplained_Observed",
@@ -286,5 +286,7 @@ GCTA_par <- function(df,
   results$PercentReduction              <- as.numeric(results$PercentReduction)
   results$AveVarianceExplained_Observed <- as.numeric(results$AveVarianceExplained_Observed)
   results$AveSE_Observed                <- as.numeric(results$AveSE_Observed)
-  return(results)
+  
+  # to return
+  results
 }

@@ -32,6 +32,7 @@ Imports:
     stats,
     tibble,
     tidyr,
+    tools,
     utils
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

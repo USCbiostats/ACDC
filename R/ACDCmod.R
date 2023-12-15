@@ -56,13 +56,12 @@
 #' @export
 #' @import CCA
 #' @import CCP
-#' @import utils
-#' @import stats
-#' @import tidyr
-#' @import foreach
-#' @import doParallel
-#' @import parallel
 ACDCmod <- function(fullData, modules, externalVar, identifierList=colnames(fullData), numNodes = 1) {
+  
+  # check correct dimensions of input
+  if(nrow(fullData) != nrow(externalVar)) stop("fullData and externalVar must have the same number of rows.")
+  if(ncol(fullData) != length(identifierList)) stop("identifierList must be the same length as the number of columns in fullData.")
+  if(length(modules) == 0) stop("No modules input.")
   
   # to remove "no visible binding" note
   moduleNum <- CCA_pval <- NULL
@@ -81,11 +80,6 @@ ACDCmod <- function(fullData, modules, externalVar, identifierList=colnames(full
   externalVar <- as.data.frame(externalVar)
   if(is.null(identifierList)) identifierList <- colnames(fullData)
   
-  # check correct dimensions of input
-  if(nrow(fullData) != nrow(externalVar)) stop("fullData and externalVar must have the same number of rows.")
-  if(ncol(fullData) != length(identifierList)) stop("identifierList must be the same length as the number of columns in fullData.")
-  if(length(modules) == 0) stop("No modules input.")
-  
   # iteration counter
   i = 0
   
@@ -95,7 +89,7 @@ ACDCmod <- function(fullData, modules, externalVar, identifierList=colnames(full
   doParallel::registerDoParallel(my.cluster)
   
   # for each module...
-  results <- foreach (i = 1:length(modules),
+  results <- foreach::foreach (i = 1:length(modules),
                       .combine = rbind,
                       .packages = c("CCA", "CCP"),
                       .export = c("coVar")) %dopar% {
@@ -123,10 +117,10 @@ ACDCmod <- function(fullData, modules, externalVar, identifierList=colnames(full
                           
                           # run CCA, save out correlation coefficients and wilks-lambda test
                           ## CCA_corr and CCA_pval
-                          cca_results <- cancor(connectivity, externalVar, ycenter = F)
+                          cca_results <- CCA::cancor(connectivity, externalVar, ycenter = F)
                           tmp[4]      <- list(cca_results$cor)
                           if (ncol(connectivity) > 1 | ncol(externalVar) > 1) {
-                            tmp[5]  <- hush(p.asym(rho = cca_results$cor,
+                            tmp[5]  <- hush(CCP::p.asym(rho = cca_results$cor,
                                                    N = dim(connectivity)[1],
                                                    p = dim(connectivity)[2],
                                                    q = dim(externalVar)[2],
@@ -144,7 +138,7 @@ ACDCmod <- function(fullData, modules, externalVar, identifierList=colnames(full
   parallel::stopCluster(cl = my.cluster)
   
   # column names for results df
-  results           <- tibble(results)
+  results           <- tibble::tibble(results)
   colnames(results) <- c("moduleNum", "colNames", "features", "CCA_corr", "CCA_pval")
   
   # unnest columns that don't need to be lists
@@ -154,5 +148,6 @@ ACDCmod <- function(fullData, modules, externalVar, identifierList=colnames(full
   results            <- results[order(results$CCA_pval), ]
   results$BHFDR_qval <- p.adjust(results$CCA_pval, method="BH")
   
-  return(results)
+  # to return
+  results
 }
