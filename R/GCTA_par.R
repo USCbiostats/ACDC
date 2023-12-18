@@ -264,6 +264,9 @@ GCTA_par <- function(df,
                         return(tmp)
                       }
   
+  # close connection
+  parallel::stopCluster(cl = my.cluster)
+  
   # column names for results df
   results <- tibble::tibble(results)
   if(permute == TRUE) {
