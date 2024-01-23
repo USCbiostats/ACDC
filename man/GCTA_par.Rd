@@ -45,7 +45,7 @@ GCTA_par(
 \item{verbose}{logical for whether or not to display progress updates; default is TRUE}
 }
 \value{
-Tibble with columns
+Data frame with columns
 \describe{
 \item{ILC}{the information loss criterion used for that iteration}
 \item{InformationLost}{percent information lost due to data reduction}
