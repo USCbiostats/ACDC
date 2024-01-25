@@ -25,6 +25,7 @@ Imports:
     doParallel,
     foreach,
     genieclust,
+    genio,
     ggplot2,
     partition,
     parallel,
