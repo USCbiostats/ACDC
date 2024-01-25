@@ -139,8 +139,9 @@ ACDCmod <- function(fullData, modules, externalVar, identifierList=colnames(full
   parallel::stopCluster(cl = my.cluster)
   
   # column names for results df
-  results           <- tibble::tibble(results)
+  results           <- data.frame(results)
   colnames(results) <- c("moduleNum", "colNames", "features", "CCA_corr", "CCA_pval")
+  rownames(results) <- results$moduleNum
   
   # unnest columns that don't need to be lists
   results <- tidyr::unnest(results, c(moduleNum, CCA_pval))

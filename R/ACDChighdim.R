@@ -153,8 +153,9 @@ ACDChighdim <- function(moduleIdentifier = 1,
   tmp[6] <- nrow(colpairs)
   
   # return same output that will rowbind with ACDC output
-  results <- tibble::tibble(t(tmp))
+  results <- data.frame(t(tmp))
   colnames(results) <- c("moduleNum", "colNames", "features", "CCA_corr", "CCA_pval", "numPairsUsed")
+  rownames(results) <- results$moduleNum
   
   # unnest columns that don't need to be lists
   results <- tidyr::unnest(results, c(moduleNum, CCA_pval, numPairsUsed))
