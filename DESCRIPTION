@@ -29,6 +29,7 @@ Imports:
     partition,
     parallel,
     tibble,
+    tidyr,
     tools,
     utils
 Encoding: UTF-8

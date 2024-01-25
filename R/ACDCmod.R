@@ -143,7 +143,7 @@ ACDCmod <- function(fullData, modules, externalVar, identifierList=colnames(full
   colnames(results) <- c("moduleNum", "colNames", "features", "CCA_corr", "CCA_pval")
   
   # unnest columns that don't need to be lists
-  results <- unnest(results, c(moduleNum, CCA_pval))
+  results <- tidyr::unnest(results, c(moduleNum, CCA_pval))
   
   # FDR
   results            <- results[order(results$CCA_pval), ]

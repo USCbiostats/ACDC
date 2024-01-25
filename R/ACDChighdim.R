@@ -157,7 +157,7 @@ ACDChighdim <- function(moduleIdentifier = 1,
   colnames(results) <- c("moduleNum", "colNames", "features", "CCA_corr", "CCA_pval", "numPairsUsed")
   
   # unnest columns that don't need to be lists
-  results <- unnest(results, c(moduleNum, CCA_pval, numPairsUsed))
+  results <- tidyr::unnest(results, c(moduleNum, CCA_pval, numPairsUsed))
   
   # to return
   results
