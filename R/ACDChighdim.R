@@ -51,6 +51,7 @@
 #' @author Katelyn Queen, \email{kjqueen@@usc.edu}
 #' 
 #' @export
+#' @importFrom tidyr unnest
 ACDChighdim <- function(moduleIdentifier = 1, 
                         moduleCols, 
                         fullData, 

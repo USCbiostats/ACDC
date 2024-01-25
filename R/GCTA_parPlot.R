@@ -35,13 +35,15 @@
 #' @author Katelyn Queen, \email{kjqueen@@usc.edu}
 #' 
 #' @export
+#' @import ggplot2
+#' @importFrom tools toTitleCase
 GCTA_parPlot <- function(df, dataName = "", summaryType) {
   
   # check that summaryType is correct
   if(!(summaryType == "coexpression" | summaryType == "covariance")) stop("summaryType must be either covariance or coexpression.")
   
   # to remove "no visible binding" note
-  InformationLost <- AveSE_Observed <- AveVarianceExplained_Observed <- AveVarianceExplained_Permuted <- NULL
+  InformationLost <- AVEObs_upper <- AVEObs_lower <- AVEPerm_upper <- AVEPerm_lower <- AveVarianceExplained_Observed <- AveVarianceExplained_Permuted <- NULL
   
   # create confidence bounds
   i = 0
@@ -54,7 +56,7 @@ GCTA_parPlot <- function(df, dataName = "", summaryType) {
   }
   
   # create and return graph
-  ggplot2::ggplot(data=df) +
+  ggplot(data=df) +
     geom_pointrange(aes(x = InformationLost, y = AveVarianceExplained_Observed,
                         ymin = AVEObs_lower, 
                         ymax = AVEObs_upper,

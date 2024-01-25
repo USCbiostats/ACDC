@@ -41,10 +41,11 @@
 #' @author Katelyn Queen, \email{kjqueen@@usc.edu}
 #' 
 #' @export
+#' @import ggplot2
 OSCA_parPlot <- function(df, externalVarName = "", dataName = "") {
   
   # to remove "no visible binding" note
-  InformationLost <- SE_Observed <- VarianceExplained_Observed <- VarianceExplained_Permuted <- NULL
+  InformationLost <- VEObs_upper <- VEObs_lower <- VarianceExplained_Observed <- VarianceExplained_Permuted <- NULL
   
   # create confidence bounds
   i = 0
@@ -54,7 +55,7 @@ OSCA_parPlot <- function(df, externalVarName = "", dataName = "") {
   }
   
   # create and return graph
-  ggplot2::ggplot(data=df) +
+  ggplot(data=df) +
      geom_line(aes(x = InformationLost, y = VarianceExplained_Observed, color="Observed"), size=0.75) +
      geom_pointrange(aes(x = InformationLost, y = VarianceExplained_Observed,
                          ymin = VEObs_lower, 
