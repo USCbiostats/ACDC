@@ -49,8 +49,9 @@
 #' @author Katelyn Queen, \email{kjqueen@@usc.edu}
 #' 
 #' @export
-#' @import CCA
+#' @import stats
 #' @import CCP
+#' @import foreach
 ACDC <- function(fullData, 
                  ILC = 0.50, 
                  externalVar, 
@@ -84,7 +85,7 @@ ACDC <- function(fullData,
   
   # partition and find modules
   if(dim(fullData)[[2]] > 4000) {
-    part <- partition::superPartition(fullData, threshold = ILC)
+    part <- partition::super_partition(fullData, threshold = ILC)
   } else {
     part <- partition::partition(fullData, threshold = ILC)
   }
@@ -101,7 +102,7 @@ ACDC <- function(fullData,
   # for each module...
   results <- foreach::foreach (i = 1:length(modules),
                       .combine = rbind,
-                      .packages = c("CCA", "CCP"),
+                      .packages = c("stats", "CCP"),
                       .export = c("coVar")) %dopar% {
                         # vector to store results
                         tmp <- c(i)
@@ -127,7 +128,7 @@ ACDC <- function(fullData,
                           
                           # run CCA, save out correlation coefficients and wilks-lambda test
                           ## CCA_corr and CCA_pval
-                          cca_results <- CCA::cancor(connectivity, externalVar, ycenter = F)
+                          cca_results <- stats::cancor(connectivity, externalVar, ycenter = F)
                           tmp[4]      <- list(cca_results$cor)
                           if (ncol(connectivity) > 1 | ncol(externalVar) > 1) {
                             tmp[5]  <- hush(CCP::p.asym(rho = cca_results$cor,
@@ -136,7 +137,7 @@ ACDC <- function(fullData,
                                                    q = dim(externalVar)[2],
                                                    tstat = "Wilks")$p.value[1])
                           } else { ## if both connectivity and externalVar are one dimensional, use simple, one-tailed correlation test
-                            tmp[5] <- pt(as.numeric(cca_results$cor)*(sqrt(length(modules)-2/(1-as.numeric(cca_results$cor)^2))), 
+                            tmp[5] <- stats::pt(as.numeric(cca_results$cor)*(sqrt(length(modules)-2/(1-as.numeric(cca_results$cor)^2))), 
                                          df = length(modules)-2, 
                                          lower.tail = F)
                           }

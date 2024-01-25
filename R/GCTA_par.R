@@ -61,6 +61,7 @@
 #' @import partition
 #' @import genieclust
 #' @import genio
+#' @import foreach
 GCTA_par <- function(df, 
                      ILCincrement = 0.05, 
                      fileLoc, 

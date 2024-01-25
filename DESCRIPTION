@@ -29,10 +29,7 @@ Imports:
     ggplot2,
     partition,
     parallel,
-    progress,
-    stats,
     tibble,
-    tidyr,
     tools,
     utils
 Encoding: UTF-8

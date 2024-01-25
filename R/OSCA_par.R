@@ -60,6 +60,8 @@
 #' 
 #' @export
 #' @import data.table
+#' @import partition
+#' @import foreach
 OSCA_par <- function(df, 
                      externalVar, 
                      ILCincrement = 0.05, 
