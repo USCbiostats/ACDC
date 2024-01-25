@@ -59,6 +59,7 @@ Data frame with columns
 \item{VarianceExplained_Permuted}{list of heritability estimates for PC1 of permuted summary data for all modules}
 \item{SE_Permuted}{list of standard errors of the heritability estimates for PC1 of permuted summary data for all modules}
 }
+}
 \description{
 GCTA_par determines the average heritability of the first principal component of either the co-expression or covariance of gene expression modules for a range of increasingly reduced datasets. Dimension reduction is done with Partition, where features are only condensed into modules if the intraclass correlation between the features is at least the user-supplied information loss criterion (ILC), 0 <= ILC <= 1. An ILC of one returns the full dataset with no reduction, and an ILC of zero returns one module of all input features, reducing the dataset to the mean value. For each ILC value, with the number of ILCs tested determined by input parameter ILCincrement, the function returns the point estimate and standard error of the average heritability of the first principal component of the co-expression or covariance of the gene expression modules in the reduced dataset. If input parameter permute is true, the function also returns the same values for a random permutation of the first principle component of the appropriate matrix.
 }

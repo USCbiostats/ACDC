@@ -29,6 +29,7 @@
 #' \item{OverallSD_Permuted}{standard deviation of the heritability estimates for PC1 of permuted summary data}
 #' \item{VarianceExplained_Permuted}{list of heritability estimates for PC1 of permuted summary data for all modules}
 #' \item{SE_Permuted}{list of standard errors of the heritability estimates for PC1 of permuted summary data for all modules}
+#' }
 #' 
 #' @details Genome-wide Complex Trait Analysis (GCTA) is a suite of C++ functions. In order to use the GCTA functions, the user must specify the absolute path to the GCTA software, which can be downloaded from the Yang Lab website [here](https://yanglab.westlake.edu.cn/software/gcta/#Download).
 #' 
