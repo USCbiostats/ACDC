@@ -30,7 +30,7 @@
 #' 
 #' Yang J, Lee SH, Goddard ME, Visscher PM. GCTA: a tool for genome-wide complex trait analysis. Am J Hum Genet. 2011 Jan 7;88(1):76-82. doi: 10.1016/j.ajhg.2010.11.011. Epub 2010 Dec 17. PMID: 21167468; PMCID: PMC3014363.
 #' 
-#' @seealso GCTA software - \url{https://yanglab.westlake.edu.cn/software/GCTA/}
+#' @seealso GCTA software - \url{https://yanglab.westlake.edu.cn/software/gcta/#Overview}
 #' 
 #' @author Katelyn Queen, \email{kjqueen@@usc.edu}
 #' 
