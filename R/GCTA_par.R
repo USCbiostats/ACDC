@@ -22,11 +22,11 @@
 #' \item{InformationLost}{percent information lost due to data reduction}
 #' \item{PercentReduction}{percent of variables condensed compared to unreduced data}
 #' \item{AveVarianceExplained_Observed}{average heritability estimate for PC1 of observed summary data}
-#' \item{AveSE_Observed}{average standard error of the heritability estimate for PC1 of observed summary data}
+#' \item{OverallSD_Observed}{standard deviation of the heritability estimates for PC1 of observed summary data}
 #' \item{VarianceExplained_Observed}{list of heritability estimates for PC1 of observed summary for all modules}
 #' \item{SE_Observed}{list of standard errors of the heritability estimates for PC1 of observed summary data for all modules}
 #' \item{AveVarianceExplained_Permuted}{average heritability for PC1 of permuted summary data}
-#' \item{AveSE_Permuted}{average standard error of the heritability estimate for PC1 of permuted summary data}
+#' \item{OverallSD_Permuted}{standard deviation of the heritability estimates for PC1 of permuted summary data}
 #' \item{VarianceExplained_Permuted}{list of heritability estimates for PC1 of permuted summary data for all modules}
 #' \item{SE_Permuted}{list of standard errors of the heritability estimates for PC1 of permuted summary data for all modules}
 #' 
@@ -198,6 +198,10 @@ GCTA_par <- function(df,
                               coex.herit.perm <- append(coex.herit.perm, perm[,2])
                               coex.SE.perm    <- append(coex.SE.perm,    perm[,3])
                             }
+                            if (verbose) {
+                              if (k %% 50 == 0) message(paste0("Heritability calculated for ", k, 
+                                                               " of ", ncol(coex.PCs), " PCs."))
+                            }
                           }
                           
                           tmp[4] <- mean(coex.herit) # average heritability for co-expression
@@ -243,16 +247,20 @@ GCTA_par <- function(df,
                               covar.herit.perm <- append(covar.herit.perm, perm[,2])
                               covar.SE.perm    <- append(covar.SE.perm,    perm[,3])
                             }
+                            if (verbose) {
+                              if (m %% 50 == 0) message(paste0("Heritability calculated for ", m, 
+                                                               " of ", ncol(covar.PCs), " PCs."))
+                            }
                           }
                           
                           tmp[4] <- mean(covar.herit) # average heritability for covariance
-                          tmp[5] <- mean(covar.SE)    # average SE for covariance
+                          tmp[5] <- sd(covar.herit)   # SD estimate for heritability estimates
                           tmp[6] <- list(covar.herit) # heritability estimates for all modules
                           tmp[7] <- list(covar.SE)    # SE for all modules
                           
                           if(permute == TRUE) {
                             tmp[8]  <- mean(covar.herit.perm) # average heritability for covariance
-                            tmp[9]  <- mean(covar.SE.perm)    # average SE for covariance
+                            tmp[9]  <- sd(covar.herit.perm)   # SD estimate for heritability estimates
                             tmp[10] <- list(covar.herit.perm) # heritability estimates for all modules
                             tmp[11] <- list(covar.SE.perm)    # SE for all modules
                           }
@@ -271,15 +279,15 @@ GCTA_par <- function(df,
   results <- data.frame(results)
   if(permute == TRUE) {
     colnames(results) <- c("ILC", "InformationLost", "PercentReduction", 
-                           "AveVarianceExplained_Observed", "AveSE_Observed", "VarianceExplained_Observed",
-                           "SE_Observed", "AveVarianceExplained_Permuted", "AveSE_Permuted",
+                           "AveVarianceExplained_Observed", "OverallSD_Observed", "VarianceExplained_Observed",
+                           "SE_Observed", "AveVarianceExplained_Permuted", "OverallSD_Permuted",
                            "VarianceExplained_Permuted", "SE_Permuted")
     results$AveVarianceExplained_Permuted <- as.numeric(results$AveVarianceExplained_Permuted)
-    results$AveSE_Permuted                <- as.numeric(results$AveSE_Permuted)
+    results$OverallSD_Permuted            <- as.numeric(results$OverallSD_Permuted)
   } else {
     colnames(results) <- c("ILC", "InformationLost", "PercentReduction", 
-                           "AveVarianceExplained_Observed", "AveSE_Observed", "VarianceExplained_Observed",
-                           "SE_Observed")
+                           "AveVarianceExplained_Observed", "OverallSD_Observed", 
+                           "VarianceExplained_Observed", "SE_Observed")
   }
   
   # fix data types
@@ -288,7 +296,7 @@ GCTA_par <- function(df,
   results$InformationLost               <- as.numeric(results$InformationLost)
   results$PercentReduction              <- as.numeric(results$PercentReduction)
   results$AveVarianceExplained_Observed <- as.numeric(results$AveVarianceExplained_Observed)
-  results$AveSE_Observed                <- as.numeric(results$AveSE_Observed)
+  results$OverallSD_Observed            <- as.numeric(results$OverallSD_Observed)
   
   # to return
   results

@@ -46,11 +46,11 @@ GCTA_parPlot <- function(df, dataName = "", summaryType) {
   # create confidence bounds
   i = 0
   for (i in 1:nrow(df)) {
-    df$AVEObs_upper[i] <- min(1, (df$AveVarianceExplained_Observed[i] + sd(df$VarianceExplained_Observed[i]$tmp)))
-    df$AVEObs_lower[i] <- max(0, (df$AveVarianceExplained_Observed[i] - sd(df$VarianceExplained_Observed[i]$tmp)))
+    df$AVEObs_upper[i] <- min(1, (df$AveVarianceExplained_Observed[i] + df$OverallSD_Observed[i]))
+    df$AVEObs_lower[i] <- max(0, (df$AveVarianceExplained_Observed[i] - df$OverallSD_Observed[i]))
     
-    df$AVEPerm_upper[i] <- min(1, (df$AveVarianceExplained_Permuted[i] + sd(df$VarianceExplained_Permuted[i]$tmp)))
-    df$AVEPerm_lower[i] <- max(0, (df$AveVarianceExplained_Permuted[i] - sd(df$VarianceExplained_Permuted[i]$tmp)))
+    df$AVEPerm_upper[i] <- min(1, (df$AveVarianceExplained_Permuted[i] + df$OverallSD_Permuted[i]))
+    df$AVEPerm_lower[i] <- max(0, (df$AveVarianceExplained_Permuted[i] - df$OverallSD_Permuted[i]))
   }
   
   # create and return graph

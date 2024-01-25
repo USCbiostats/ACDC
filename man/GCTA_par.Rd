@@ -51,11 +51,11 @@ Data frame with columns
 \item{InformationLost}{percent information lost due to data reduction}
 \item{PercentReduction}{percent of variables condensed compared to unreduced data}
 \item{AveVarianceExplained_Observed}{average heritability estimate for PC1 of observed summary data}
-\item{AveSE_Observed}{average standard error of the heritability estimate for PC1 of observed summary data}
+\item{OverallSD_Observed}{standard deviation of the heritability estimates for PC1 of observed summary data}
 \item{VarianceExplained_Observed}{list of heritability estimates for PC1 of observed summary for all modules}
 \item{SE_Observed}{list of standard errors of the heritability estimates for PC1 of observed summary data for all modules}
 \item{AveVarianceExplained_Permuted}{average heritability for PC1 of permuted summary data}
-\item{AveSE_Permuted}{average standard error of the heritability estimate for PC1 of permuted summary data}
+\item{OverallSD_Permuted}{standard deviation of the heritability estimates for PC1 of permuted summary data}
 \item{VarianceExplained_Permuted}{list of heritability estimates for PC1 of permuted summary data for all modules}
 \item{SE_Permuted}{list of standard errors of the heritability estimates for PC1 of permuted summary data for all modules}
 }
