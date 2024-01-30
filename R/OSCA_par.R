@@ -107,8 +107,7 @@ OSCA_par <- function(df,
   results <- foreach::foreach (i = 1:length(ILClist),
                       .combine = rbind,
                       .packages = c("partition", "data.table"),
-                      .export = c("OSCA_singleValue"),
-                      .verbose = FALSE) %dopar% {
+                      .export = c("OSCA_singleValue")) %dopar% {
     # vector to store results
     tmp <- c(ILClist[i])
     
