@@ -152,7 +152,7 @@ OSCA_par <- function(df,
   parallel::stopCluster(cl = my.cluster)
   
   # column names for results df
-  results <- data.frame(results)
+  results <- as.data.frame(results)
   if(permute == TRUE) {
     colnames(results) <- c("ILC", "InformationLost", "PercentReduction", "VarianceExplained_Observed", "SE_Observed", "VarianceExplained_Permuted", "SE_Permuted")
   } else {
