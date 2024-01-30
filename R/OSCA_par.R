@@ -14,7 +14,7 @@
 #' @param numNodes number of available compute nodes for parallelization; default is 1
 #' @param verbose logical for whether or not to display progress updates; default is TRUE
 #' 
-#' @return Tibble with columns
+#' @return Data frame with columns
 #' 
 #' \describe{
 #' \item{ILC}{the information loss criterion used for that iteration}
@@ -152,7 +152,7 @@ OSCA_par <- function(df,
   parallel::stopCluster(cl = my.cluster)
   
   # column names for results df
-  results <- tibble::tibble(results)
+  results <- data.frame(results)
   if(permute == TRUE) {
     colnames(results) <- c("ILC", "InformationLost", "PercentReduction", "VarianceExplained_Observed", "SE_Observed", "VarianceExplained_Permuted", "SE_Permuted")
   } else {
