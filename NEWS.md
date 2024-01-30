@@ -1,3 +1,7 @@
+# modACDC 2.0.1
+
+* Fix bug in `OSCA_par` which prevented assigning of column names
+
 # modACDC 2.0.0
 
 * Added `GCTA_singleValue`, `GCTA_par` and `GCTA_parPlot` to use GCTA GREML function from Yang Lab in R to choose optimal dimension reduction level
