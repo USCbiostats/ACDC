@@ -1,3 +1,5 @@
+<img src=https://github.com/USCbiostats/ACDC/blob/main/modACDCHex.png width=300 />
+
 [![CRAN status](https://www.r-pkg.org/badges/version-ago/modACDC)](https://cran.r-project.org/package=modACDC)
 [![CRAN downloads](http://cranlogs.r-pkg.org/badges/grand-total/modACDC)](https://cran.r-project.org/package=modACDC)
 [![status](https://tinyverse.netlify.com/badge/modACDC)](https://CRAN.R-project.org/package=modACDC)
